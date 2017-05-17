@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="app.dao.ViewDao">
+	<cache-ref namespace="app.dao.ViewDao" />
+
+	<select id="findItems" resultType="Map">
+		select A.cs_ver_oid,A.cs_oid,A.cs_name,A.concept_id,A.concept_code,
+		A.property_id,A.property_name,A.property_desc,A.property_value,
+		B.property_id,B.property_name,B.property_desc,B.property_value as pv
+		from (
+		select csv.cs_ver_oid,cs.cs_oid,cs.cs_name,c.concept_id,c.concept_code,
+		cp.property_id,cp.property_name,cp.property_desc,cpv.property_value
+		 from code_sys cs join code_sys_ver csv
+		on cs.cs_oid = csv.cs_oid join concepts c
+		on c.cs_ver_oid = csv.cs_ver_oid
+		join concept_property cp 
+		on cp.cs_ver_oid = csv.cs_ver_oid
+		join concept_property_value cpv
+		on cp.cs_ver_oid = cpv.cs_ver_oid
+		and cp.property_id =  cpv.property_id
+		and c.concept_id = cpv.concept_id
+		where cs.cs_name = 'industry' and cp.property_name = 'Industry Name' ) A , (
+		select csv.cs_ver_oid,cs.cs_oid,cs.cs_name,c.concept_id,c.concept_code,
+		cp.property_id,cp.property_name,cp.property_desc,cpv.property_value
+		 from code_sys cs join code_sys_ver csv
+		on cs.cs_oid = csv.cs_oid join concepts c
+		on c.cs_ver_oid = csv.cs_ver_oid
+		join concept_property cp 
+		on cp.cs_ver_oid = csv.cs_ver_oid
+		join concept_property_value cpv
+		on cp.cs_ver_oid = cpv.cs_ver_oid
+		and cp.property_id =  cpv.property_id
+		and c.concept_id = cpv.concept_id
+		where cs.cs_name = 'industry' and cp.property_name = 'Industry Parent')  B
+		where A.cs_ver_oid = B.cs_ver_oid and A.cs_oid = B.cs_oid
+		and A.concept_id = B.concept_id
+		order by A.concept_id
+	</select>
+</mapper>

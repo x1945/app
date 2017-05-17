@@ -1,0 +1,13 @@
+/* Add here all your css styles (customizations) */
+body {
+	/* 	padding-right: 0px !important; */
+	
+}
+
+.modal-msg {
+	font-size: 1.2em;
+}
+
+.text-error {
+	color: red;
+}

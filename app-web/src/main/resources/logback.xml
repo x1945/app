@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<substitutionProperty name="logHome" value="/ECWeb/logs" />
+	<discriminator class="ch.qos.logback.classic.sift.MDCBasedDiscriminator">
+		<key>userId</key>
+		<defaultValue>SYSTEM</defaultValue>
+	</discriminator>
+	<jmxConfigurator />
+
+	<!-- 控制台輸出 -->
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<!-- <encoding>MS950</encoding> -->
+		<encoding>UTF-8</encoding>
+		<!-- encoder默認配置為PartternLayoutEncoder -->
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<!-- <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern> -->
+			<pattern>[%d{HH:mm:ss.SSS}|%X{userId}|%replace(%.3t){'\D',''}|%level|%c{0}.%method] %m%n</pattern>
+		</encoder>
+	</appender>
+
+	<!-- 按照每天生成日志文件 -->
+	<appender name="ROLLINGFILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<encoding>UTF-8</encoding>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!--日志文件輸出的文件名 -->
+			<fileNamePattern>${logHome}/%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+			<!--日志文件保留天數 -->
+			<MaxHistory>15</MaxHistory>
+			<!--日志文件最大的大小 -->
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<!-- <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern> -->
+			<pattern>[%d{HH:mm:ss.SSS}|%X{userId}|%replace(%.3t){'\D',''}|%level|%c{0}.%method] %m%n</pattern>
+		</encoder>
+
+		<!-- LevelFilter： 級別過濾器 -->
+		<!-- <filter class="ch.qos.logback.classic.filter.LevelFilter"> -->
+		<!-- <level>ERROR</level> -->
+		<!-- <onMatch>ACCEPT</onMatch> -->
+		<!-- <onMismatch>DENY</onMismatch> -->
+		<!-- </filter> -->
+		<!-- 過濾掉 TRACE 和 DEBUG 級別的日志 -->
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>INFO</level>
+		</filter>
+	</appender>
+
+	<logger name="app" level="DEBUG" />
+	<logger name="sys" level="DEBUG" />
+	<logger name="org" level="WARN" />
+
+	<!-- TRACE < DEBUG < INFO < WARN < ERROR -->
+	<root level="INFO">
+		<appender-ref ref="STDOUT" />
+		<appender-ref ref="ROLLINGFILE" />
+	</root>
+
+</configuration>

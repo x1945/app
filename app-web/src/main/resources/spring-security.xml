@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+    	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+	<http pattern="/favicon.ico" security="none" />
+	<http pattern="/views/**.js" security="none" />
+	<http pattern="/assets/**" security="none" />
+
+	<http auto-config="false" use-expressions="true">
+		<anonymous enabled="true" />
+		<headers>
+			<frame-options policy="SAMEORIGIN" />
+		</headers>
+		<csrf disabled="true" />
+		<!-- <csrf /> -->
+
+		<intercept-url pattern="/**" access="permitAll" />
+		<!-- <intercept-url pattern="/test" -->
+		<!-- access="isAuthenticated() or isRememberMe()" /> -->
+
+		<!-- always-use-default-target="true" -->
+		<form-login login-page="/login" default-target-url="/index"
+			username-parameter="j_username" password-parameter="j_password"
+			login-processing-url="/j_spring_security_check"
+			always-use-default-target="true" authentication-failure-url="/login?failure" />
+		<!-- delete-cookies="JSESSIONID" -->
+		<logout logout-url="/logout" logout-success-url="/login" />
+		<!-- <logout logout-url="/logout" success-handler-ref="CustomLogoutSuccessHandler" 
+			delete-cookies="JSESSIONID" /> -->
+
+		<!-- token-validity-seconds="1209600" 二星期 -->
+		<!-- <remember-me token-validity-seconds="999999999" -->
+		<!-- data-source-ref="dataSource" remember-me-parameter="remember-me" -->
+		<!-- user-service-ref="authService" key="myAppKey" /> -->
+
+		<remember-me token-validity-seconds="999999999"
+			token-repository-ref="jdbcTokenRepository" remember-me-parameter="remember-me"
+			user-service-ref="customUserDetailsService" key="myAppKey" />
+
+		<!-- <remember-me services-ref="rememberMeServices" /> -->
+
+		<!-- <session-management -->
+		<!-- session-authentication-error-url="/login?error=10"> -->
+		<!-- <concurrency-control max-sessions="2" -->
+		<!-- error-if-maximum-exceeded="true" session-registry-ref="sessionRegistry"></concurrency-control> -->
+		<!-- </session-management> -->
+
+		<!-- <session-management> -->
+		<!-- <concurrency-control max-sessions="2" -->
+		<!-- session-registry-ref="sessionRegistry"></concurrency-control> -->
+		<!-- </session-management> -->
+	</http>
+
+	<authentication-manager>
+		<authentication-provider user-service-ref="customUserDetailsService">
+			<!-- 密碼 md5 加密 -->
+			<password-encoder hash="md5" />
+		</authentication-provider>
+	</authentication-manager>
+
+	<beans:bean id="customUserDetailsService" class="sys.spring.CustomUserDetailsService" />
+
+	<!-- Uses a database table to maintain a set of persistent login data -->
+	<beans:bean id="jdbcTokenRepository" class="sys.spring.CustomJdbcTokenRepositoryImpl">
+		<beans:property name="createTableOnStartup" value="false" />
+		<beans:property name="dataSource" ref="dataSource" />
+	</beans:bean>
+
+</beans:beans>

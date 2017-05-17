@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/mvc
+	http://www.springframework.org/schema/mvc/spring-mvc.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:component-scan base-package="app.controller" />
+
+	<mvc:annotation-driven>
+		<mvc:message-converters register-defaults="true">
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+				<constructor-arg value="utf-8" />
+				<property name="writeAcceptCharset" value="false" />
+				<property name="supportedMediaTypes">
+					<list>
+						<value>text/html; charset=utf-8</value>
+						<value>text/json; charset=utf-8</value>
+						<value>application/json; charset=utf-8</value>
+						<value>application/x-www-form-urlencoded; charset=utf-8</value>
+					</list>
+				</property>
+			</bean>
+
+			<!-- RestController format -->
+			<bean
+				class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+				<property name="objectMapper">
+					<bean class="sys.system.JaxbJacksonObjectMapper" />
+				</property>
+				<property name="supportedMediaTypes">
+					<list>
+						<value>text/html; charset=utf-8</value>
+						<value>text/json; charset=utf-8</value>
+						<value>application/json; charset=utf-8</value>
+						<value>application/x-www-form-urlencoded; charset=utf-8</value>
+					</list>
+				</property>
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+
+
+	<!-- <bean id="jsonConverter" class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"></bean> -->
+	<!-- <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"> -->
+	<!-- <property name="messageConverters"> -->
+	<!-- <list> -->
+	<!-- <ref bean="jsonConverter"/> -->
+	<!-- </list> -->
+	<!-- </property> -->
+	<!-- </bean> -->
+
+	<mvc:default-servlet-handler />
+
+	<mvc:interceptors>
+		<!-- i18n -->
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<!-- <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"> -->
+			<bean class="sys.spring.CustomLocaleChangeInterceptor">
+				<property name="paramName" value="lang" />
+			</bean>
+		</mvc:interceptor>
+		<!-- Controller -->
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<bean class="sys.system.ControllerInterceptor" />
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="cache" value="false" />
+		<property name="prefix" value="/views/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<!-- 錯誤訊息攔截器 -->
+	<bean class="sys.system.ExceptionResolver">
+		<property name="encoding" value="utf-8" />
+	</bean>
+
+</beans>
