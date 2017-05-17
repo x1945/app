@@ -1,0 +1,9 @@
+/target/
+target
+.settings/*
+!.settings/.jsdtscope
+.project
+.classpath
+appLogs
+node_modules
+.sass-cache
