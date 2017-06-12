@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import app.beans.App0Usr;
 import app.dao.App0UsrDao;
-import sys.mybatis.SQLParams;
+import fantasy.ibatis.other.SQLParams;
 import sys.service.I18nService;
 
 @RunWith(SpringJUnit4ClassRunner.class)

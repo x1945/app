@@ -5,8 +5,8 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import fantasy.ibatis.annotation.Table;
 import sys.beans.BaseBean;
-import sys.mybatis.Table;
 
 @SuppressWarnings("serial")
 @Table(pk = { "id" })

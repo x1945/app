@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import app.beans.App0Usr;
 import app.dao.App0UsrDao;
-import sys.mybatis.SQLParams;
+import fantasy.ibatis.other.SQLParams;
 
 @Service
 public class IndexService {

@@ -2,8 +2,8 @@ package app.beans;
 
 import java.io.Serializable;
 
+import fantasy.ibatis.annotation.Table;
 import sys.beans.BaseBean;
-import sys.mybatis.Table;
 
 @SuppressWarnings("serial")
 @Table(pk = { "product_uuid" })

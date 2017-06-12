@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import app.dao.ViewDao;
-import sys.mybatis.SQLParams;
+import fantasy.ibatis.other.SQLParams;
 import sys.util.StringUtil;
 
 @Service

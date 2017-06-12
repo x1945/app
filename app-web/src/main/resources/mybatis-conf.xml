@@ -44,9 +44,9 @@
 		</plugin>
 
 
-		<plugin interceptor="sys.mybatis.plugin.BaseDaoPlugin" />
-		<!-- <plugin interceptor="sys.mybatis.plugin.PaginationPlugin" /> -->
-		<plugin interceptor="sys.mybatis.plugin.ResultPlugin" />
+		<plugin interceptor="fantasy.ibatis.plugin.GenericDaoPlugin" />
+		<!-- <plugin interceptor="fantasy.ibatis.plugin.PaginationPlugin" /> -->
+		<plugin interceptor="fantasy.ibatis.plugin.ResultPlugin" />
 
 
 	</plugins>

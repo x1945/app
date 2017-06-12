@@ -242,6 +242,12 @@
 			<artifactId>json</artifactId>
 			<version>${json.version}</version>
 		</dependency>
+		<!-- ibatis-generic -->
+		<dependency>
+			<groupId>fantasy.ibatis</groupId>
+			<artifactId>ibatis-generic</artifactId>
+			<version>1.0</version>
+		</dependency>
 		<!-- app-sys -->
 		<dependency>
 			<groupId>app</groupId>
@@ -249,7 +255,6 @@
 			<version>1.0</version>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<finalName>app</finalName>
 		<plugins>

@@ -16,9 +16,9 @@ package app.dao;
 import org.apache.ibatis.annotations.CacheNamespace;
 
 import app.beans.App0Usr;
-import sys.mybatis.BaseDao;
+import fantasy.ibatis.dao.GenericDao;
 
 @CacheNamespace
-public interface App0UsrDao extends BaseDao<App0Usr> {
+public interface App0UsrDao extends GenericDao<App0Usr> {
 
 }
