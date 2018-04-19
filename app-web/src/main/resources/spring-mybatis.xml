@@ -29,9 +29,9 @@
 	</bean>
 
 	<!-- 修改時自動重新載入mappers/*.xml -->
-	<beans profile="local,dev,test">
-		<bean id="xmlMapperLoader" class="fantasy.ibatis.other.XMLMapperLoader">
-		</bean>
-	</beans>
+	<!-- <beans profile="local,dev,test"> -->
+	<!-- <bean id="xmlMapperLoader" class="fantasy.ibatis.other.XMLMapperLoader"> -->
+	<!-- </bean> -->
+	<!-- </beans> -->
 
 </beans>
