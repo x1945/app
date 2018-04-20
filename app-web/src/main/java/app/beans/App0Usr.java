@@ -9,7 +9,7 @@ import fantasy.ibatis.annotation.Table;
 import sys.beans.BaseBean;
 
 @SuppressWarnings("serial")
-@Table(pk = { "id" })
+@Table(pk = { "id" }, ignore = { "series" })
 public class App0Usr extends BaseBean implements Serializable {
 
 	String id;

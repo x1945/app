@@ -19,7 +19,7 @@ import fantasy.ibatis.other.SQLParams;
 import sys.service.I18nService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-//@ActiveProfiles("dev")
+// @ActiveProfiles("dev")
 @ActiveProfiles("local")
 @ContextConfiguration(locations = { "classpath*:spring-test.xml" })
 public class SpringTest {
@@ -32,17 +32,19 @@ public class SpringTest {
 	@Autowired
 	App0UsrDao userDao;
 
-	 @Test
+	@Test
 	public void MyBatisTest() {
 		Map<String, Object> args = new HashMap<String, Object>();
-		int count = userDao.count(args);
-		LOG.debug("count : {}", count);
-
-		List<App0Usr> list = userDao.list(args);
-		LOG.debug("list : {}", list);
+		args.put("id", "TEST60");
+		App0Usr usr = userDao.queryByPk(args);
+		LOG.debug("usr : {}", usr);
+		usr.setUpdater("aaa");
+		userDao.save(usr);
+		App0Usr usr1 = userDao.queryByPk(args);
+		LOG.debug("usr1 : {}", usr1);
 	}
 
-//	 @Test
+	// @Test
 	public void I18nTest() {
 		LOG.debug("xxxx : xxxxx");
 		LOG.debug("xxxx : {}", i18n.getMessage("xxxx"));
@@ -51,7 +53,7 @@ public class SpringTest {
 		LOG.debug("register : {}", i18n.getMessage("register"));
 	}
 
-//	@Test
+	// @Test
 	public void testDao() {
 		SQLParams sp = new SQLParams();
 		sp.put("org_uuid", "xx");
