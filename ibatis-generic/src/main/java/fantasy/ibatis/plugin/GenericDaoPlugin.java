@@ -20,7 +20,7 @@ import fantasy.ibatis.util.BuildUtil;
 import fantasy.ibatis.util.SqlUtil;
 
 /**
- * MyBatis BaseDao Plugin 攔截BaseDao,產生出對應之SQL
+ * MyBatis GenericDao Plugin GenericDao,產生出對應之SQL
  * 
  * @author Fantasy
  * 
@@ -43,7 +43,7 @@ public class GenericDaoPlugin implements Interceptor {
 		String mapperSQL = boundSQL.getSql();
 		SqlCommandType sct = ms.getSqlCommandType();
 		// LOG.debug("mapperSQL:{}", mapperSQL);
-		// 判斷是否為BaseDao
+		// 判斷是否為GenericDao
 		if (SqlUtil.isGenericDaoSql(mapperSQL)) {
 			Class<?> daoClass = BuildUtil.getDaoClass(ms.getId());
 			Class<?> entityClass = BuildUtil.getrResolveType(daoClass);

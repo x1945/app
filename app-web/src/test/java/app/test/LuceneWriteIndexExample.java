@@ -23,7 +23,7 @@ public class LuceneWriteIndexExample {
 		IndexWriter writer = createWriter();
 		List<Document> documents = new ArrayList<>();
 
-		Document document1 = createDocument(1, "Lokesh", "Gupta", "howtodoinjava.com");
+		Document document1 = createDocument(1, "Lokesh", "中華民國", "howtodoinjava.com");
 		documents.add(document1);
 
 		Document document2 = createDocument(2, "Brian", "Schultz", "example.com");

@@ -62,7 +62,6 @@ public final class SqlUtil {
 
 	public static String parseSql(Class<?> daoClass, String sqlName) {
 		String result = null;
-		// LOG.debug("genericDaoSql:{}", genericDaoSql);
 		Class<?> entityClass = BuildUtil.getrResolveType(daoClass);
 		if (entityClass != null) {
 			switch (sqlName) {
@@ -100,22 +99,21 @@ public final class SqlUtil {
 				break;
 			}
 		}
-		// LOG.debug("parseSql:{}", result);
+		LOG.debug("parseSql:{}", result);
 		return result;
 	}
 
-	public static String countSql(Class<?> entityClass) {
+	private static String countSql(Class<?> entityClass) {
 		StringBuffer sb = new StringBuffer();
 		if (entityClass.isAnnotationPresent(Table.class)) {
 			Table bdt = entityClass.getAnnotation(Table.class);
 			sb.append(" select count(1) from ").append(parseTable(entityClass, bdt));
 			sb.append(" <where>").append(parseWhere(entityClass, bdt)).append(" </where>");
 		}
-
 		return sb.toString();
 	}
 
-	public static String listSql(Class<?> entityClass) {
+	private static String listSql(Class<?> entityClass) {
 		StringBuffer sb = new StringBuffer();
 		if (entityClass.isAnnotationPresent(Table.class)) {
 			Table bdt = entityClass.getAnnotation(Table.class);
@@ -137,34 +135,30 @@ public final class SqlUtil {
 		return sb.toString();
 	}
 
-	public static String querySql(Class<?> entityClass) {
+	private static String querySql(Class<?> entityClass) {
 		StringBuffer sb = new StringBuffer();
 		if (entityClass.isAnnotationPresent(Table.class)) {
 			Table bdt = entityClass.getAnnotation(Table.class);
 			sb.append(" select * from ").append(parseTable(entityClass, bdt));
-			// sb.append(" where ").append(parseWherePks(bdt));
 			sb.append(" where ").append(parseWhere(entityClass, bdt));
 			// 只取一筆
 			// PostgreSQL
 			sb.append(" LIMIT 1 ");
 		}
-
 		return sb.toString();
 	}
 
-	public static String queryByPkSql(Class<?> entityClass) {
+	private static String queryByPkSql(Class<?> entityClass) {
 		StringBuffer sb = new StringBuffer();
 		if (entityClass.isAnnotationPresent(Table.class)) {
 			Table bdt = entityClass.getAnnotation(Table.class);
 			sb.append(" select * from ").append(parseTable(entityClass, bdt));
-			// sb.append(" where ").append(parseWherePk(bdt));
 			sb.append(" where ").append(parseWherePks(bdt));
 		}
-
 		return sb.toString();
 	}
 
-	public static String insertSQL(Class<?> entityClass) {
+	private static String insertSQL(Class<?> entityClass) {
 		StringBuffer sb = new StringBuffer();
 		if (entityClass.isAnnotationPresent(Table.class)) {
 			Table bdt = entityClass.getAnnotation(Table.class);
@@ -172,28 +166,25 @@ public final class SqlUtil {
 			sb.append(" insert into ").append(parseTable(entityClass, bdt)).append(" (");
 			for (Field field : fields) {
 				String fName = field.getName();
-				if (!ArrayUtils.contains(bdt.ignore(), fName) && !ArrayUtils.contains(fieldIgnore, fName)) {
+				if (!ArrayUtils.contains(bdt.ignore(), fName) && !ArrayUtils.contains(fieldIgnore, fName))
 					sb.append(bdt.upperCase() ? fName.toUpperCase() : fName).append(",");
-				}
 			}
 			int len = sb.length();
 			sb.delete(len - 1, sb.length());
 			sb.append(" ) values ( ");
 			for (Field field : fields) {
 				String fName = field.getName();
-				if (!ArrayUtils.contains(bdt.ignore(), fName) && !ArrayUtils.contains(fieldIgnore, fName)) {
+				if (!ArrayUtils.contains(bdt.ignore(), fName) && !ArrayUtils.contains(fieldIgnore, fName))
 					sb.append("#{").append(fName).append("},");
-				}
 			}
 			len = sb.length();
 			sb.delete(len - 1, sb.length());
 			sb.append(" )");
 		}
-
 		return sb.toString();
 	}
 
-	public static String updateSql(Class<?> entityClass) {
+	private static String updateSql(Class<?> entityClass) {
 		StringBuffer sb = new StringBuffer();
 		if (entityClass.isAnnotationPresent(Table.class)) {
 			Table bdt = entityClass.getAnnotation(Table.class);
@@ -201,59 +192,52 @@ public final class SqlUtil {
 			sb.append(" set ").append(parseSet(entityClass, bdt));
 			sb.append(" where ").append(parseWherePks(bdt));
 		}
-
 		return sb.toString();
 	}
 
-	public static String updateSeqSql(Class<?> entityClass) {
+	private static String updateSeqSql(Class<?> entityClass) {
 		StringBuffer sb = new StringBuffer();
 		if (entityClass.isAnnotationPresent(Table.class)) {
 			Table bdt = entityClass.getAnnotation(Table.class);
 			String seq = bdt.upperCase() ? bdt.seq().toUpperCase() : bdt.seq();
 			sb.append(" update ").append(parseTable(entityClass, bdt));
-			// sb.append(" set seq = #{seq} ");
 			sb.append(" set ").append(seq).append(" = #{").append(bdt.seq()).append("} ");
 			sb.append(" where ").append(parseWherePks(bdt));
 		}
-
 		return sb.toString();
 	}
 
-	public static String deleteSql(Class<?> entityClass) {
+	private static String deleteSql(Class<?> entityClass) {
 		StringBuffer sb = new StringBuffer();
 		if (entityClass.isAnnotationPresent(Table.class)) {
 			Table bdt = entityClass.getAnnotation(Table.class);
 			sb.append(" delete from  ").append(parseTable(entityClass, bdt));
 			sb.append(" where ").append(parseWherePks(bdt));
 		}
-
 		return sb.toString();
 	}
 
-	public static String deleteByPkSql(Class<?> entityClass) {
+	private static String deleteByPkSql(Class<?> entityClass) {
 		StringBuffer sb = new StringBuffer();
 		if (entityClass.isAnnotationPresent(Table.class)) {
 			Table bdt = entityClass.getAnnotation(Table.class);
 			sb.append(" delete from  ").append(parseTable(entityClass, bdt));
-			// sb.append(" where ").append(parseWherePk(bdt));
 			sb.append(" where ").append(parseWherePks(bdt));
 		}
-
 		return sb.toString();
 	}
 
-	public static String deleteByMapSql(Class<?> entityClass) {
+	private static String deleteByMapSql(Class<?> entityClass) {
 		StringBuffer sb = new StringBuffer();
 		if (entityClass.isAnnotationPresent(Table.class)) {
 			Table bdt = entityClass.getAnnotation(Table.class);
 			sb.append(" delete from  ").append(parseTable(entityClass, bdt));
 			sb.append(" where ").append(parseWhere(entityClass, bdt));
 		}
-
 		return sb.toString();
 	}
 
-	public static String batchInsertSql(Class<?> entityClass) {
+	private static String batchInsertSql(Class<?> entityClass) {
 		StringBuffer sb = new StringBuffer();
 		if (entityClass.isAnnotationPresent(Table.class)) {
 			Table bdt = entityClass.getAnnotation(Table.class);
@@ -261,9 +245,8 @@ public final class SqlUtil {
 			sb.append(" insert into ").append(parseTable(entityClass, bdt)).append(" (");
 			for (Field field : fields) {
 				String fName = field.getName();
-				if (!ArrayUtils.contains(bdt.ignore(), fName) && !ArrayUtils.contains(fieldIgnore, fName)) {
+				if (!ArrayUtils.contains(bdt.ignore(), fName) && !ArrayUtils.contains(fieldIgnore, fName))
 					sb.append(bdt.upperCase() ? fName.toUpperCase() : fName).append(",");
-				}
 			}
 			int len = sb.length();
 			sb.delete(len - 1, sb.length());
@@ -271,15 +254,13 @@ public final class SqlUtil {
 			sb.append("<foreach item='data' collection='list' open='(' close=')' separator='),('>");
 			for (Field field : fields) {
 				String fName = field.getName();
-				if (!ArrayUtils.contains(bdt.ignore(), fName) && !ArrayUtils.contains(fieldIgnore, fName)) {
+				if (!ArrayUtils.contains(bdt.ignore(), fName) && !ArrayUtils.contains(fieldIgnore, fName))
 					sb.append("#{data.").append(fName).append("},");
-				}
 			}
 			len = sb.length();
 			sb.delete(len - 1, sb.length());
 			sb.append("</foreach>");
 		}
-
 		return sb.toString();
 	}
 
@@ -293,11 +274,8 @@ public final class SqlUtil {
 	private static String parseTable(Class<?> type, Table bdt) {
 		StringBuffer sb = new StringBuffer();
 		sb.append(bdt.schema());
-		if (SimpleUtil.isNotEmpty(bdt.schema())) {
+		if (SimpleUtil.isNotEmpty(bdt.schema()))
 			sb.append(".");
-		}
-		// sb.append(bdt.name().length() > 0 ? bdt.name() :
-		// type.getSimpleName());
 		if (bdt.name().length() > 0) {
 			sb.append(bdt.name());
 		} else {
@@ -356,7 +334,6 @@ public final class SqlUtil {
 		sb.append("<trim prefix=' ' prefixOverrides='and|or'>");
 
 		Field[] fields = SimpleUtil.getAllFields(entityClass);
-		// int count = 0;
 		for (Field field : fields) {
 			String fName = field.getName();
 			if (!ArrayUtils.contains(bdt.ignore(), fName) && !ArrayUtils.contains(fieldIgnore, fName)) {
@@ -365,9 +342,7 @@ public final class SqlUtil {
 				} else {
 					sb.append("<if test='").append(fName).append("!= null'>");
 				}
-				// if (count++ >= 1) {
 				sb.append(" and ");
-				// }
 				sb.append(bdt.upperCase() ? fName.toUpperCase() : fName);
 				sb.append("=#{").append(field.getName()).append("}");
 				sb.append("</if>");
@@ -391,7 +366,6 @@ public final class SqlUtil {
 		for (String pk : pks) {
 			if (sb.length() > 0)
 				sb.append(" and ");
-
 			sb.append(bdt.upperCase() ? pk.toUpperCase() : pk);
 			sb.append("=#{").append(pk).append("}");
 		}
@@ -418,17 +392,7 @@ public final class SqlUtil {
 				}
 				sb.append(bdt.upperCase() ? fName.toUpperCase() : fName);
 			}
-
-			// if (ArrayUtils.contains(listOrderByFields, fName)) {
-			// if (sb.length() == 0) {
-			// sb.append(" order by ");
-			// } else {
-			// sb.append(",");
-			// }
-			// sb.append(bdt.upperCase() ? fName.toUpperCase() : fName);
-			// }
 		}
-
 		return sb.toString();
 	}
 

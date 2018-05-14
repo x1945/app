@@ -41,6 +41,16 @@ public class LuceneReadIndexExample {
 			Document d = searcher.doc(sd.doc);
 			System.out.println(String.format(d.get("id")));
 		}
+		
+		// Search by listName
+		TopDocs foundDocs22 = searchByListName("中華民國", searcher);
+
+		System.out.println("中華民國 Total Results :: " + foundDocs22.totalHits);
+
+		for (ScoreDoc sd : foundDocs22.scoreDocs) {
+			Document d = searcher.doc(sd.doc);
+			System.out.println(String.format(d.get("lastName")));
+		}
 
 		// Search by Index
 		TopDocs foundDocs3 = searchByIndex("com", searcher);
@@ -77,6 +87,13 @@ public class LuceneReadIndexExample {
 		QueryParser qp = new QueryParser("firstName", new StandardAnalyzer());
 		Query firstNameQuery = qp.parse(firstName);
 		TopDocs hits = searcher.search(firstNameQuery, 10);
+		return hits;
+	}
+	
+	private static TopDocs searchByListName(String listName, IndexSearcher searcher) throws Exception {
+		QueryParser qp = new QueryParser("lastName", new StandardAnalyzer());
+		Query listNameQuery = qp.parse(listName);
+		TopDocs hits = searcher.search(listNameQuery, 10);
 		return hits;
 	}
 
