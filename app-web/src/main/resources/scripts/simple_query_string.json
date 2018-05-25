@@ -1,0 +1,25 @@
+{
+	"query": {
+		"query_string": {
+			"fields": ["content"],
+			"query": "{{content}}",
+			"analyzer": "ik_smart",
+			"auto_generate_synonyms_phrase_query" : true
+		}
+	},
+	"highlight": {
+		"pre_tags": [
+			"<tag1>",
+			"<tag2>"
+		],
+		"post_tags": [
+			"</tag1>",
+			"</tag2>"
+		],
+		"fields": {
+			"content": {
+				
+			}
+		}
+	}
+}

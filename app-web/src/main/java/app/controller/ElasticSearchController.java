@@ -2,8 +2,8 @@ package app.controller;
 
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
@@ -28,12 +28,12 @@ public class ElasticSearchController {
 	private static final Logger log = LoggerFactory.getLogger(ElasticSearchController.class);
 
 	@Autowired
-	ElasticSearchService es;
+	ElasticSearchService ess;
 
 	@PageSet
 	@RequestMapping
 	public String index(Model model) {
-		log.info("es");
+		log.info("es index");
 		return "es";
 	}
 
@@ -41,24 +41,19 @@ public class ElasticSearchController {
 	@ResponseBody
 	public Map<String, Object> search(@RequestParam Map<String, Object> params) {
 		Map<String, Object> result = new HashMap<String, Object>();
-		String word = StringUtil.trim(params.get("word"));
+		String word = StringUtil.trim(params.get("word")).toLowerCase();
 		log.debug("word:{}", word);
-		log.debug("log test");
-		System.out.println("start");
 		TransportClient client = null;
 		try {
-			System.out.println("createClient");
-			client = es.getClient();
+			client = ess.getClient();
 			// System.out.println("createIndex");
 			// createIndex(client);
 			// System.out.println("getIndex");
 			// getIndex(client);
 
-			SearchResponse sr = es.searchDoc(client, word);
+			SearchResponse sr = ess.searchDoc(client, word);
 			result.put("sr", sr.toString());
-
-			System.out.println("Analyze");
-			Set<String> analyze = es.analyze(client, word);
+			List<String> analyze = ess.analyze(client, word);
 			result.put("analyze", analyze);
 			// System.out.println("searchDoc");
 			// searchDoc(client);
@@ -68,11 +63,9 @@ public class ElasticSearchController {
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		} finally {
-//			if (client != null)
-//				client.close();
+			// if (client != null)
+			// client.close();
 		}
-		System.out.println("end");
-
 		return result;
 	}
 

@@ -1,0 +1,33 @@
+{
+	"query": {
+		"bool": {
+			"should": [
+				{
+					"match_phrase": {
+						"content": "{{content}}"
+					}
+				},
+				{
+					"term": {
+						"content": "{{content}}"
+					}
+				}
+			]
+		}
+	},
+	"highlight": {
+		"pre_tags": [
+			"<tag1>",
+			"<tag2>"
+		],
+		"post_tags": [
+			"</tag1>",
+			"</tag2>"
+		],
+		"fields": {
+			"content": {
+				
+			}
+		}
+	}
+}

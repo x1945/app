@@ -49,6 +49,7 @@ function keyEvent(event) {
 }
 
 function elasticSearch(word){
+	$('#count').html(0);
 	console.log('serach:'+word);
 	$.ajax({
 		type : 'POST',
@@ -61,21 +62,36 @@ function elasticSearch(word){
 				// 導向登入頁
 				// location.href = '/login';
 //			});
-			console.log(result);
+//			console.log(result);
 			var sr = jQuery.parseJSON(result.sr);
-			console.log(sr);
+//			console.log(sr);
 			var html = [];
 			console.log(sr.hits.total);
 			if (sr.hits.total > 0){
+				$('#count').html(sr.hits.total);
 				$.each(sr.hits.hits ,function(i, data){
-					console.log(i)
+					console.log(data);
+					if (data._source){
+						var s = /_A/.test(data._source.pid) ? '研究結案報告' : '計劃書';
+						//　"計畫編號", "計畫名稱", "年度", "計畫類別", "計畫型式", "計畫主持人", "計畫主持人單位"
+						html.push('<ul>');
+						html.push('<li><b><t1>PID：</t1>'+data._source.pid+'</b></li>');
+						html.push('<li><b><t1>計畫年度：</t1>'+data._source.yr+'年度 '+s+'</b></li>');
+						html.push('<li><b><t1>計畫編號：</t1>'+data._source.cid+'</b></li>');
+						html.push('<li><b><t1>計畫名稱：</t1>'+data._source.cname+'</b></li>');
+						html.push('<li><b><t1>計畫類別：</t1>'+data._source.category+'('+data._source.type+')</b></li>');
+//						html.push('<li><b><t1>計畫型式：</t1>'+data._source.type+'</b></li>');
+						html.push('<li><b><t1>計畫主持人：</t1>'+data._source.director_name+'('+data._source.director_dept+')</b></li>');
+//						html.push('<li><b><t1>計畫主持人單位：</t1>'+data._source.director_dept+'</b></li>');
+						html.push('</ul>');
+					}
 					html.push('<p>');
-					html.push('文章'+data._id);
-					html.push('</p><p>');
+//					html.push('文章'+data._id);
+//					html.push('</p><p>');
 					$.each(data.highlight.content, function(j, v){
 						html.push(v);
 					});
-					html.push('</p>');
+					html.push('</p><hr/>');
 				});
 			}else{
 //				html.push('<p>查無資料，可試著用以下關鍵字查詢</p>');

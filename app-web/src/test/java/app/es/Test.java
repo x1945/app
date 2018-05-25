@@ -29,9 +29,12 @@ import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class test {
+public class Test {
 
-	private static final Logger log = LoggerFactory.getLogger(test.class);
+	private static final Logger log = LoggerFactory.getLogger(Test.class);
+
+	private static final String INDEX_NAME = "coa-index";
+	private static final String INDEX_TYPE = "fulltext";
 
 	public static void main(String[] args) throws Exception {
 		log.debug("log test");
@@ -46,7 +49,7 @@ public class test {
 			// getIndex(client);
 
 			System.out.println("Analyze");
-			Analyze(client);
+			Analyze(client, "test");
 			// System.out.println("searchDoc");
 			// searchDoc(client);
 			// System.out.println("searchDocByScripts");
@@ -131,13 +134,13 @@ public class test {
 		System.out.println("_version:" + _version);
 	}
 
-	public static void Analyze(TransportClient client) {
+	public static void Analyze(TransportClient client, String text) {
 		// 呼叫 IK 分詞分詞
 		AnalyzeRequestBuilder ikRequest = new AnalyzeRequestBuilder(client,
 				AnalyzeAction.INSTANCE);
 		ikRequest.setAnalyzer("ik_smart");
-		ikRequest.setAnalyzer("ik_max_word");
-		ikRequest.setText("菸鹼醯胺腺嘌呤二核苷酸磷酸葡萄糖水解酶");
+		// ikRequest.setAnalyzer("ik_max_word");
+		ikRequest.setText(text);
 		List<AnalyzeToken> ikTokenList = ikRequest.execute().actionGet().getTokens();
 		// 迴圈賦值
 		for (AnalyzeToken at : ikTokenList) {
@@ -150,15 +153,19 @@ public class test {
 	 * 
 	 * @param client
 	 */
-	public static void createDoc(TransportClient client) {
+	public static void createDoc(TransportClient client, IndexData indexData) {
 		Map<String, Object> json = new HashMap<String, Object>();
-		json.put("user", "kimchy");
-		json.put("postDate", new Date());
-		json.put("message", "trying out Elasticsearch");
-
-		IndexRequest indexRequest = new IndexRequest("twitter", "tweet", "kcHmTGMBLC-JyDImsAew")
+		json.put("pid", indexData.getPid());
+		json.put("cid", indexData.getCpid());
+		json.put("cname", indexData.getCname());
+		json.put("yr", indexData.getYr());
+		json.put("category", indexData.getCategory());
+		json.put("type", indexData.getType());
+		json.put("director_name", indexData.getDirector_name());
+		json.put("director_dept", indexData.getDirector_dept());
+		IndexRequest indexRequest = new IndexRequest(INDEX_NAME, INDEX_TYPE, indexData.getPid())
 				.source(json);
-		UpdateRequest updateRequest = new UpdateRequest("twitter", "tweet", "kcHmTGMBLC-JyDImsAew")
+		UpdateRequest updateRequest = new UpdateRequest(INDEX_NAME, INDEX_TYPE, indexData.getPid())
 				.doc(json)
 				.upsert(indexRequest);
 		try {
@@ -177,8 +184,8 @@ public class test {
 		SearchResponse response = client.prepareSearch("my-index")
 				.setTypes("fulltext")
 				// .setSearchType(SearchType.DEFAULT)
-				// .setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
-				.setSearchType(SearchType.QUERY_AND_FETCH)
+				.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
+				// .setSearchType(SearchType.QUERY_AND_FETCH)
 				// .setSearchType(SearchType.QUERY_THEN_FETCH)
 				.setQuery(QueryBuilders.termQuery("title", "計畫"))                 // Query
 				// .setPostFilter(QueryBuilders.rangeQuery("age").from(12).to(18)) // Filter

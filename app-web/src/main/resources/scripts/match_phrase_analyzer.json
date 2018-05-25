@@ -1,0 +1,12 @@
+{
+	"from": 0,
+	"size": 10,
+	"query": {
+		"match_phrase": {
+			"content": {
+				"query": "{{content}}",
+				"slop":0
+			}
+		}
+	}
+}

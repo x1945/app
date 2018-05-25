@@ -1,0 +1,15 @@
+{
+	"from" : 0, "size" : 10,
+	"query": {
+		"term": {
+			"content": "{{content}}"
+		}
+	},
+	"highlight": {
+		"pre_tags": ["<tag1>","<tag2>"],
+		"post_tags": ["</tag1>","</tag2>"],
+		"fields": {
+			"content": {}
+		}
+	}
+}

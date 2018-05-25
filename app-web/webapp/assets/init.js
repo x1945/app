@@ -128,12 +128,13 @@
 			},
 			error : function(jqXHR, textStatus, errorThrown) {
 				console.log('jqXHR:', jqXHR);
+				alert('ajax error');
 				try {
 					var json = $.parseJSON(jqXHR.responseText);
 					console.log('json:', json);
-					$.error(json.message);
+//					$.error(json.message);
 				} catch (e) {
-					$.error(textStatus + '<br/>' + errorThrown);
+//					$.error(textStatus + '<br/>' + errorThrown);
 				}
 			},
 			success : function(data, textStatus) {

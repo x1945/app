@@ -1,0 +1,25 @@
+{
+	"query": {
+		"terms": {
+			"content": [
+				"{{content}}",
+				"測試"
+			]
+		}
+	},
+	"highlight": {
+		"pre_tags": [
+			"<tag1>",
+			"<tag2>"
+		],
+		"post_tags": [
+			"</tag1>",
+			"</tag2>"
+		],
+		"fields": {
+			"content": {
+				
+			}
+		}
+	}
+}
