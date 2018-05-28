@@ -98,8 +98,8 @@ public class ElasticSearchService {
 		LOG.debug("term.getTotalHits[{}]", sr.getHits().getTotalHits());
 		if (sr.getHits().getTotalHits() == 0) {
 			sr = new SearchTemplateRequestBuilder(client)
-					// .setScript(getScript("match_phrase"))
-					.setScript(getScript("match_phrase_analyzer"))
+					.setScript(getScript("match_phrase"))
+					// .setScript(getScript("match_phrase_analyzer"))
 					.setScriptType(ScriptType.INLINE)
 					.setScriptParams(template_params)
 					// .setRequest(new SearchRequest())

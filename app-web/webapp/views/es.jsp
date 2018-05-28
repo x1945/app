@@ -33,7 +33,7 @@
 <!-- 					<li>3.菸鹼醯胺腺嘌呤二核苷酸磷酸葡萄糖水解酶。</li> -->
 <!-- 				</ul> -->
 <!-- 				<hr> -->
-				<h3>查詢結果 共<span id="count">0</span>筆</h3>
+				<h3>查詢結果 共<span id="count">0</span>筆，查詢時間<span id="searchTime">0</span>秒</h3>
 				<hr>
 				<div id="searchReslut"></div>
 			</div>

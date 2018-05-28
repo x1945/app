@@ -50,6 +50,7 @@ function keyEvent(event) {
 
 function elasticSearch(word){
 	$('#count').html(0);
+	$('#searchTime').html(0);
 	console.log('serach:'+word);
 	$.ajax({
 		type : 'POST',
@@ -66,6 +67,7 @@ function elasticSearch(word){
 			var sr = jQuery.parseJSON(result.sr);
 //			console.log(sr);
 			var html = [];
+			$('#searchTime').html(result.searchTime || 0);
 			console.log(sr.hits.total);
 			if (sr.hits.total > 0){
 				$('#count').html(sr.hits.total);

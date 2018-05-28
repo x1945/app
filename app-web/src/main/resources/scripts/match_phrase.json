@@ -5,5 +5,20 @@
 		"match_phrase": {
 			"content": "{{content}}"
 		}
+	},
+	"highlight": {
+		"pre_tags": [
+			"<tag1>",
+			"<tag2>"
+		],
+		"post_tags": [
+			"</tag1>",
+			"</tag2>"
+		],
+		"fields": {
+			"content": {
+				
+			}
+		}
 	}
 }

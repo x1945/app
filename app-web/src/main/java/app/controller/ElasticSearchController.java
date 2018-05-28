@@ -50,8 +50,11 @@ public class ElasticSearchController {
 			// createIndex(client);
 			// System.out.println("getIndex");
 			// getIndex(client);
-
+			long startTime = System.currentTimeMillis();
 			SearchResponse sr = ess.searchDoc(client, word);
+			double searchTime = (double) (System.currentTimeMillis() - startTime) / 1000d;
+			log.info("查詢時間[{}]秒", searchTime);
+			result.put("searchTime", searchTime);
 			result.put("sr", sr.toString());
 			List<String> analyze = ess.analyze(client, word);
 			result.put("analyze", analyze);

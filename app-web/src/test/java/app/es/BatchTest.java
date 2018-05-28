@@ -18,6 +18,7 @@ public class BatchTest {
 
 	private static final Logger LOG = LoggerFactory.getLogger(BatchTest.class);
 
+	private static final int INDEX_NUM = 3;
 	private static final String INDEX_NAME = "coa-index";
 	private static final String INDEX_TYPE = "fulltext";
 	private static final String 研究結案報告 = "D:/全文檢索/研究結案報告";
@@ -68,13 +69,14 @@ public class BatchTest {
 			for (File f : files) {
 				Map<String, String> map = info.get(f.getName());
 				if (map != null) {
-					// String content = loadContent(f);
-					IndexData bean = new IndexData();
-					Util.mapToBean(map, bean);
-					bean.setPid(f.getName().replaceAll(".txt", "_" + type));
-					// bean.setContent(content);
-					bean.setFilePath(f.getPath());
-					result.add(bean);
+					for (int i = 1; i <= INDEX_NUM; i++) {
+						IndexData bean = new IndexData();
+						Util.mapToBean(map, bean);
+						bean.setPid(f.getName().replaceAll(".txt", "_" + type + "_" + i));
+						// bean.setContent(content);
+						bean.setFilePath(f.getPath());
+						result.add(bean);
+					}
 				} else {
 					LOG.warn("{} is not info!!", f.getName());
 				}
