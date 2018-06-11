@@ -25,15 +25,19 @@ public class EsClient {
 	private static BulkProcessor bulkProcessor = null;
 	private static int count = 0;
 	private static long time = 0;
+	// private static final String host = "localhost";
+	private static final String host = "192.168.1.95";
+	private static final int port = 9300;
 
 	// 【獲取TransportClient 的方法】
 	public static TransportClient getClient() {
 		try {
 			if (client == null) {
+				LOG.debug("host[{}] port[{}]", host, port);
 				count = 0;
 				time = 0;
 				client = new PreBuiltTransportClient(Settings.EMPTY)
-						.addTransportAddress(new TransportAddress(InetAddress.getByName("localhost"), 9300));
+						.addTransportAddress(new TransportAddress(InetAddress.getByName(host), port));
 			}// if
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -44,7 +48,8 @@ public class EsClient {
 	// 關閉
 	public static void close() {
 		try {
-			bulkProcessor.awaitClose(3, TimeUnit.MINUTES);// 阻塞至所有的請求線程處理完畢後，斷開連接資源
+			if (bulkProcessor != null)
+				bulkProcessor.awaitClose(3, TimeUnit.MINUTES);// 阻塞至所有的請求線程處理完畢後，斷開連接資源
 			LOG.info("共提交{}個文檔，TookInMillis[{}]", count, time);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -73,8 +78,10 @@ public class EsClient {
 								time += response.getTook().millis();
 								LOG.info("提交{}個文檔，TookInMillis[{}] hasFailures[{}]",
 										String.format("%04d", response.getItems().length),
-										String.format("%05d", response.getTook().millis()),
+										String.format("%06d", response.getTook().millis()),
 										response.hasFailures());
+								if (response.hasFailures())
+									LOG.error("{}", response.buildFailureMessage());
 							}
 
 							@Override

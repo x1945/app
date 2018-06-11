@@ -1,0 +1,31 @@
+{
+	"from": "{{from}}",
+	"size": 10,
+	"query": {
+		"bool": {
+			"must": {
+				"term": {
+					"content": "{{content}}"
+				}
+			},
+			"filter": {
+				"term": {
+					"divisioin_id": "{{divisioin_id}}"
+				}
+			}
+		}
+	},
+	"highlight": {
+		"pre_tags": [
+			"<tag1>"
+		],
+		"post_tags": [
+			"</tag1>"
+		],
+		"fields": {
+			"content": {
+				
+			}
+		}
+	}
+}

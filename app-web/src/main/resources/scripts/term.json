@@ -3,7 +3,7 @@
 	"size": 10,
 	"query": {
 		"term": {
-			"content": "{{content}}"
+			"content1": "{{content}}"
 		}
 	},
 	"highlight": {

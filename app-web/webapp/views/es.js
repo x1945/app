@@ -90,9 +90,11 @@ function elasticSearch(word){
 					html.push('<p>');
 //					html.push('文章'+data._id);
 //					html.push('</p><p>');
-					$.each(data.highlight.content, function(j, v){
-						html.push(v);
-					});
+					if (data.highlight && data.highlight.content1){
+						$.each(data.highlight.content1, function(j, v){
+							html.push(v);
+						});
+					}
 					html.push('</p><hr/>');
 				});
 			}else{

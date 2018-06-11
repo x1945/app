@@ -1,0 +1,46 @@
+{
+	"from": "{{from}}",
+	"size": 10,
+	"query": {
+		"bool": {
+			"should": [
+				{
+					"match": {
+						"content1": {
+							"query": "{{word}}",
+							"analyzer": "ik_smart"
+						}
+					}
+				},
+				{
+					"match": {
+						"content2": {
+							"query": "{{word}}",
+							"analyzer": "ik_smart"
+						}
+					}
+				}
+			]
+		}
+	},
+	"highlight": {
+		"pre_tags": [
+			"<tag1>",
+			"<tag2>"
+		],
+		"post_tags": [
+			"</tag1>",
+			"</tag2>"
+		],
+		"fields": {
+			"content1": {
+				"fragment_size": 50,
+				"number_of_fragments": 3
+			},
+			"content2": {
+				"fragment_size": 50,
+				"number_of_fragments": 3
+			}
+		}
+	}
+}

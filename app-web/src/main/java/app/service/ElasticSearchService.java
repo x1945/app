@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.Set;
 
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeAction;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeRequestBuilder;
@@ -83,11 +82,14 @@ public class ElasticSearchService {
 	 */
 	public SearchResponse searchDoc(TransportClient client, String word) {
 		Map<String, Object> template_params = new HashMap<>();
+		template_params.put("from", 0);
 		template_params.put("content", word);
+		template_params.put("divisioin_id", "01");
 
 		SearchRequest sReq = new SearchRequest("coa-index");
 		SearchResponse sr = new SearchTemplateRequestBuilder(client)
-				.setScript(getScript("term"))
+				 .setScript(getScript("term"))
+//				.setScript(getScript("term_filter"))
 				.setScriptType(ScriptType.INLINE)
 				.setScriptParams(template_params)
 				// .setRequest(new SearchRequest())
@@ -98,7 +100,8 @@ public class ElasticSearchService {
 		LOG.debug("term.getTotalHits[{}]", sr.getHits().getTotalHits());
 		if (sr.getHits().getTotalHits() == 0) {
 			sr = new SearchTemplateRequestBuilder(client)
-					.setScript(getScript("match_phrase"))
+					// .setScript(getScript("match_phrase"))
+					.setScript(getScript("match_phrase_filter"))
 					// .setScript(getScript("match_phrase_analyzer"))
 					.setScriptType(ScriptType.INLINE)
 					.setScriptParams(template_params)
@@ -194,21 +197,25 @@ public class ElasticSearchService {
 	}
 
 	private String loadFile(String fileName) {
-		StringBuilder result = new StringBuilder();
-		// Get file from resources folder
 		ClassLoader classLoader = this.getClass().getClassLoader();
 		File file = new File(classLoader.getResource(fileName).getFile());
+		return loadFile(file);
+	}
 
-		try (Scanner scanner = new Scanner(file)) {
-			while (scanner.hasNextLine()) {
-				if (result.length() > 0)
-					result.append("\n");
-				String line = scanner.nextLine();
-				result.append(line);
+	private String loadFile(File file) {
+		StringBuilder result = new StringBuilder();
+		if (file != null) {
+			try (Scanner scanner = new Scanner(file)) {
+				while (scanner.hasNextLine()) {
+					if (result.length() > 0)
+						result.append("\n");
+					String line = scanner.nextLine();
+					result.append(line);
+				}
+				scanner.close();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-			scanner.close();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 		return result.toString();
 	}

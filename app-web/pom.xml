@@ -28,7 +28,7 @@
 		<mybatis.spring.version>1.3.1</mybatis.spring.version>
 		<mybatis.pagehelper.version>4.2.1</mybatis.pagehelper.version>
 		<json.version>20160212</json.version>
-<!-- 		<lucene.version>7.3.0</lucene.version> -->
+		<!-- <lucene.version>7.3.0</lucene.version> -->
 		<lucene.version>7.2.1</lucene.version>
 	</properties>
 
@@ -261,17 +261,29 @@
 			<artifactId>lucene-analyzers-smartcn</artifactId>
 			<version>${lucene.version}</version>
 		</dependency>
-		
+
 		<!-- elasticsearch -->
 		<dependency>
-		    <groupId>org.elasticsearch</groupId>
-		    <artifactId>elasticsearch</artifactId>
-		    <version>6.2.4</version>
+			<groupId>org.elasticsearch</groupId>
+			<artifactId>elasticsearch</artifactId>
+			<version>6.2.4</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.elasticsearch.client</groupId>
-		    <artifactId>transport</artifactId>
-		    <version>6.2.4</version>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>transport</artifactId>
+			<version>6.2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.elasticsearch.client</groupId>
+			<artifactId>elasticsearch-rest-client</artifactId>
+			<version>6.2.4</version>
+		</dependency>
+
+		<!-- Java OCR -->
+		<dependency>
+			<groupId>net.sourceforge.tess4j</groupId>
+			<artifactId>tess4j</artifactId>
+			<version>4.0.2</version>
 		</dependency>
 
 		<!-- JSON -->

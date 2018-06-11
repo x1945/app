@@ -1,0 +1,20 @@
+{
+	"from": 0,
+	"size": 10,
+	"query": {
+		"bool": {
+			"should": [
+				{
+					"term": {
+						"content1": "大豆"
+					}
+				},
+				{
+					"term": {
+						"content2": "大豆"
+					}
+				}
+			]
+		}
+	}
+}

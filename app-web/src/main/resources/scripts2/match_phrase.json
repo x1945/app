@@ -1,0 +1,40 @@
+{
+	"from": "{{from}}",
+	"size": 10,
+	"query": {
+		"bool": {
+			"should": [
+				{
+					"match_phrase": {
+						"content1": "{{word}}"
+					}
+				},
+				{
+					"match_phrase": {
+						"content2": "{{word}}"
+					}
+				}
+			]
+		}
+	},
+	"highlight": {
+		"pre_tags": [
+			"<tag1>",
+			"<tag2>"
+		],
+		"post_tags": [
+			"</tag1>",
+			"</tag2>"
+		],
+		"fields": {
+			"content1": {
+				"fragment_size": 50,
+				"number_of_fragments": 3
+			},
+			"content2": {
+				"fragment_size": 50,
+				"number_of_fragments": 3
+			}
+		}
+	}
+}

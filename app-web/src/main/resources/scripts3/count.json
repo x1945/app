@@ -1,0 +1,18 @@
+{
+	"query": {
+		"bool": {
+			"should": [
+				{
+					"term": {
+						"content1": "{{word}}"
+					}
+				},
+				{
+					"term": {
+						"content2": "{{word}}"
+					}
+				}
+			]
+		}
+	}
+}

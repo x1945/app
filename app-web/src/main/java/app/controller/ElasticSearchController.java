@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import app.annotation.PageSet;
 import app.service.ElasticSearchService;
+import app.service.ElasticSearchService2;
 import sys.util.StringUtil;
 
 @Controller
@@ -29,6 +30,9 @@ public class ElasticSearchController {
 
 	@Autowired
 	ElasticSearchService ess;
+	
+	@Autowired
+	ElasticSearchService2 ess2;
 
 	@PageSet
 	@RequestMapping
@@ -51,12 +55,14 @@ public class ElasticSearchController {
 			// System.out.println("getIndex");
 			// getIndex(client);
 			long startTime = System.currentTimeMillis();
-			SearchResponse sr = ess.searchDoc(client, word);
+//			SearchResponse sr = ess.searchDoc(client, word);
+			SearchResponse sr = ess2.searchDoc(client, word);
 			double searchTime = (double) (System.currentTimeMillis() - startTime) / 1000d;
 			log.info("查詢時間[{}]秒", searchTime);
 			result.put("searchTime", searchTime);
 			result.put("sr", sr.toString());
-			List<String> analyze = ess.analyze(client, word);
+//			List<String> analyze = ess.analyze(client, word);
+			List<String> analyze = ess2.analyze(client, word);
 			result.put("analyze", analyze);
 			// System.out.println("searchDoc");
 			// searchDoc(client);
