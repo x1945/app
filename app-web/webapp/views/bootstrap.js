@@ -1,0 +1,5 @@
+//onload
+//$(function() {
+//	alert('bootstrap');
+//});
+

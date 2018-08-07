@@ -21,9 +21,18 @@ public class BatchTest2 {
 	private static final int INDEX_NUM = 1;
 	private static final String INDEX_NAME = "coa-index";
 	private static final String INDEX_TYPE = "fulltext";
-	private static final String 研究結案報告 = "D:/全文檢索/研究結案報告";
-	private static final String 計畫書 = "D:/全文檢索/計畫書";
-	private static final String 頁面呈現資訊 = "D:/全文檢索/頁面呈現資訊";
+	// private static final String 研究結案報告 = "D:/全文檢索/研究結案報告";
+	// private static final String 計畫書 = "D:/全文檢索/計畫書";
+	// private static final String 頁面呈現資訊 = "D:/全文檢索/頁面呈現資訊";
+
+	// private static final String 研究結案報告 = "\\\\AP4-File\\e\\COA-ES\\全文檢索\\研究結案報告";
+	// private static final String 計畫書 = "\\\\AP4-File\\e\\COA-ES\\全文檢索\\計畫書";
+	// private static final String 頁面呈現資訊 = "\\\\AP4-File\\e\\COA-ES\\全文檢索\\頁面呈現資訊";
+
+	private static final String 研究結案報告 = "\\\\AP4-File\\e\\COA-TmpPDF\\fullText\\研究結案報告";
+	private static final String 計畫書 = "\\\\AP4-File\\e\\COA-TmpPDF\\fullText\\計畫書";
+	private static final String 頁面呈現資訊 = "\\\\AP4-File\\e\\COA-TmpPDF\\fullText\\頁面呈現資訊";
+
 	// private static final String[] Fields = { "計畫編號", "計畫名稱", "年度", "計畫類別", "計畫型式", "計畫主持人", "計畫主持人單位", "主辦專家機關",
 	// "主辦專家單位", "主辦專家", "領域", "綱要", "推動小組" };
 	private static final String[] eFields = { "cpid", "cname", "yr", "category", "type", "director_name",
@@ -56,10 +65,11 @@ public class BatchTest2 {
 					for (int i = 1; i <= INDEX_NUM; i++) {
 						IndexData2 bean = new IndexData2();
 						Util.mapToBean(map, bean);
-						bean.setPid(f.getName().replaceAll(".txt", "_" + i));
+						// bean.setPid(f.getName().replaceAll(".txt", "_" + i));
+						bean.setPid(f.getName().replaceAll(".txt", ""));
 						bean.setFilePath1(計畫書 + "/" + f.getName());
 						bean.setFilePath2(研究結案報告 + "/" + f.getName());
-						bean.setFilePath2(計畫書 + "/" + f.getName()); // TEST
+						// bean.setFilePath2(計畫書 + "/" + f.getName()); // TEST
 						result.add(bean);
 					}
 				} else {
@@ -98,7 +108,7 @@ public class BatchTest2 {
 				try (Scanner scanner = new Scanner(file)) {
 					while (scanner.hasNextLine()) {
 						String line = scanner.nextLine();
-						result.append(line).append('\n');
+						result.append(line).append(" ").append('\n');
 					}
 					scanner.close();
 				} catch (IOException e) {

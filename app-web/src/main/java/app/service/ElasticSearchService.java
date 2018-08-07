@@ -88,8 +88,8 @@ public class ElasticSearchService {
 
 		SearchRequest sReq = new SearchRequest("coa-index");
 		SearchResponse sr = new SearchTemplateRequestBuilder(client)
-				 .setScript(getScript("term"))
-//				.setScript(getScript("term_filter"))
+				.setScript(getScript("term"))
+				// .setScript(getScript("term_filter"))
 				.setScriptType(ScriptType.INLINE)
 				.setScriptParams(template_params)
 				// .setRequest(new SearchRequest())
@@ -153,7 +153,6 @@ public class ElasticSearchService {
 				.setRequest(sReq)
 				.get()
 				.getResponse();
-
 		LOG.debug("term.getTotalHits[{}]", sr.getHits().getTotalHits());
 		if (sr.getHits().getTotalHits() == 0 && analyze.size() > 0) {
 			LOG.debug("must[{}]", analyze.get(0));

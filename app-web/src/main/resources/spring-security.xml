@@ -36,9 +36,9 @@
 		<!-- data-source-ref="dataSource" remember-me-parameter="remember-me" -->
 		<!-- user-service-ref="authService" key="myAppKey" /> -->
 
-		<remember-me token-validity-seconds="999999999"
-			token-repository-ref="jdbcTokenRepository" remember-me-parameter="remember-me"
-			user-service-ref="customUserDetailsService" key="myAppKey" />
+<!-- 		<remember-me token-validity-seconds="999999999" -->
+<!-- 			token-repository-ref="jdbcTokenRepository" remember-me-parameter="remember-me" -->
+<!-- 			user-service-ref="customUserDetailsService" key="myAppKey" /> -->
 
 		<!-- <remember-me services-ref="rememberMeServices" /> -->
 

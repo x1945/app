@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemesh>
+<!-- 	<mapping path="/app/bootstrap" decorator="/layout/bootstrap.jsp"/> -->
+<!-- 	<mapping path="/app/bootstrap" exclude="true"/> -->
 	<mapping path="/*" decorator="/layout/default.jsp" />
+	<mapping path="/bootstrap" decorator="/layout/bootstrap.jsp" />
 </sitemesh>

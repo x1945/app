@@ -18,6 +18,7 @@ import org.apache.http.util.EntityUtils;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.common.xcontent.DeprecationHandler;
 import org.elasticsearch.common.xcontent.NamedXContentRegistry;
 import org.elasticsearch.common.xcontent.json.JsonXContentParser;
 import org.json.JSONObject;
@@ -108,13 +109,13 @@ public class ElasticSearchService3 {
 			// if (sr != null)
 			// LOG.debug("term.getTotalHits[{}]", sr.getHits().getTotalHits());
 
-			 LOG.debug("responseBody:{}", responseBody);
-//			String jsonResult = responseBody.replaceAll("\"hits\":\\[.+\\]", "\"hits\":\\[\\]");
-//			LOG.debug("count jsonResult:{}", jsonResult);
+			LOG.debug("responseBody:{}", responseBody);
+			// String jsonResult = responseBody.replaceAll("\"hits\":\\[.+\\]", "\"hits\":\\[\\]");
+			// LOG.debug("count jsonResult:{}", jsonResult);
 
-//			JSONObject json = new JSONObject(jsonResult);
-//			LOG.debug("json:{}", json);
-//			LOG.debug("hits:{}", new JSONObject(json.get("hits").toString()).get("total"));
+			// JSONObject json = new JSONObject(jsonResult);
+			// LOG.debug("json:{}", json);
+			// LOG.debug("hits:{}", new JSONObject(json.get("hits").toString()).get("total"));
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -122,7 +123,7 @@ public class ElasticSearchService3 {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * 查詢文件
 	 * 
@@ -170,7 +171,7 @@ public class ElasticSearchService3 {
 		SearchResponse response = null;
 		try {
 			JsonXContentParser xContentParser = new JsonXContentParser(NamedXContentRegistry.EMPTY,
-					new JsonFactory().createParser(responseJson));
+					DeprecationHandler.THROW_UNSUPPORTED_OPERATION, new JsonFactory().createParser(responseJson));
 			response = SearchResponse.fromXContent(xContentParser);
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -1,11 +1,16 @@
 package app.es;
 
 import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.elasticsearch.action.bulk.BulkProcessor;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
@@ -26,7 +31,7 @@ public class EsClient {
 	private static int count = 0;
 	private static long time = 0;
 	// private static final String host = "localhost";
-	private static final String host = "192.168.1.95";
+	private static final String host = "192.168.1.96";
 	private static final int port = 9300;
 
 	// 【獲取TransportClient 的方法】
@@ -101,5 +106,57 @@ public class EsClient {
 			}
 		}// if
 		return bulkProcessor;
+	}
+
+	/**
+	 * 儲存文件
+	 * 
+	 * @param indexData
+	 * @return
+	 */
+	public static boolean saveDoc(IndexData2 indexData) {
+		return saveDoc("coa-index", "fulltext", indexData);
+	}
+
+	/**
+	 * 儲存文件
+	 * 
+	 * @param indexName
+	 * @param indexType
+	 * @param indexData
+	 * @return
+	 */
+	public static boolean saveDoc(String indexName, String indexType, IndexData2 indexData) {
+		Map<String, Object> doc = new HashMap<String, Object>();
+		doc.put("pid", indexData.getPid());
+		doc.put("cpid", indexData.getCpid());
+		doc.put("cname", indexData.getCname());
+		doc.put("yr", indexData.getYr());
+		doc.put("category", indexData.getCategory());
+		doc.put("type", indexData.getType());
+		doc.put("director_name", indexData.getDirector_name());
+		doc.put("director_dept", indexData.getDirector_dept());
+		doc.put("divisioin_id", indexData.getDivisioin_id());
+		doc.put("segid", indexData.getSegid());
+		doc.put("eid", indexData.getEid());
+		doc.put("real_domain_id", indexData.getReal_domain_id());
+		doc.put("domain_id", indexData.getDomain_id());
+		doc.put("promote_id", indexData.getPromote_id());
+		doc.put("content1", indexData.getContent1());
+		doc.put("content2", indexData.getContent2());
+
+		boolean result = false;
+		try {
+			IndexRequest indexRequest = new IndexRequest(indexName, indexType, indexData.getPid())
+					.source(doc);
+			UpdateRequest updateRequest = new UpdateRequest(indexName, indexType, indexData.getPid())
+					.doc(doc)
+					.upsert(indexRequest);
+			getClient().update(updateRequest).get();
+			result = true;
+		} catch (InterruptedException | ExecutionException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 }
