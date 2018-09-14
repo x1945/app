@@ -72,7 +72,7 @@ public class Test {
 	 */
 	public static TransportClient createClient() throws UnknownHostException {
 		TransportClient client = new PreBuiltTransportClient(Settings.EMPTY)
-				.addTransportAddress(new TransportAddress(InetAddress.getByName("localhost"), 9300));
+				.addTransportAddress(new TransportAddress(InetAddress.getByName("192.168.1.96"), 9300));
 		return client;
 	}
 
