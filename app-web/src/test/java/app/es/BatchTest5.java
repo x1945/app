@@ -20,13 +20,13 @@ public class BatchTest5 {
 	private static final String INDEX_NAME = "coa-index";
 	private static final String INDEX_TYPE = "fulltext";
 
-	// private static final String 研究結案報告 = "\\\\AP4-File\\e\\COA-TmpPDF\\fullText\\研究結案報告";
-	// private static final String 計畫書 = "\\\\AP4-File\\e\\COA-TmpPDF\\fullText\\計畫書";
-	// private static final String 頁面呈現資訊 = "\\\\AP4-File\\e\\COA-TmpPDF\\fullText\\頁面呈現資訊";
+//	private static final String 研究結案報告 = "\\\\AP4-File\\e\\COA-TmpPDF\\fullText\\研究結案報告";
+//	private static final String 計畫書 = "\\\\AP4-File\\e\\COA-TmpPDF\\fullText\\計畫書";
+//	private static final String 頁面呈現資訊 = "\\\\AP4-File\\e\\COA-TmpPDF\\fullText\\頁面呈現資訊";
 
-	private static final String 研究結案報告 = "D:/全文檢索/fullText/研究結案報告";
-	private static final String 計畫書 = "D:/全文檢索/fullText/計畫書";
-	private static final String 頁面呈現資訊 = "D:/全文檢索/fullText/頁面呈現資訊";
+	 private static final String 研究結案報告 = "D:/全文檢索/fullText20181002/研究結案報告";
+	 private static final String 計畫書 = "D:/全文檢索/fullText20181002/計畫書";
+	 private static final String 頁面呈現資訊 = "D:/全文檢索/fullText20181002/頁面呈現資訊";
 
 	private final String[] eFields = { "cpid", "cname", "yr", "category", "categoryName",
 			"type", "typeName", "direcotrName", "directorDeptid", "directorDeptName",
