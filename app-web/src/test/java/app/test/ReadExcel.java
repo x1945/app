@@ -28,14 +28,14 @@ public class ReadExcel {
 
 	svm_parameter _param;
 	String _model_file = "jcs_svm_model.txt";
+	String[] files = { "人力發展處", "人事室", "主計室" };
+	// String[] files = { "人事室", "主計室" };
+	// String[] files = { "人力發展處" };
 
 	public static void main(String[] args) throws IOException {
 		System.out.println("start");
 		ReadExcel readExcel = new ReadExcel();
-		String[] files = { "人力發展處", "人事室", "主計室" };
-		// String[] files = { "人事室", "主計室" };
-		// String[] files = { "人力發展處" };
-		List<SvmModelData> list = readExcel.read(files);
+		List<SvmModelData> list = readExcel.read(readExcel.files);
 		// readExcel.output(list);
 		readExcel.svm(list);
 		System.out.println("end");
@@ -519,13 +519,11 @@ public class ReadExcel {
 	 * @param SvmModelList
 	 */
 	public void svm(List<SvmModelData> SvmModelList) {
-		List<String> keywords = getKeyWords(SvmModelList, 40);
+		List<String> keywords = getKeyWords(SvmModelList, 30);
 		System.out.println("keywords.size():" + keywords.size());
 		System.out.println(keywords);
 
 		svm_problem _problem = parseVector(SvmModelList, keywords);
-		// System.out.println(_problem.l);
-		// System.out.println(_problem.x);
 		training(_problem);
 		testing(_problem);
 	}
@@ -595,12 +593,22 @@ public class ReadExcel {
 	}
 
 	public void testing(svm_problem _prob) {
-		System.out.print("Training...");
+		System.out.println("Training...");
+
 		svm_model model;
 		int correct = 0, total = 0;
 		try {
 			model = svm.svm_load_model(_model_file);
+			//
+			int modelLength = model.label.length;
+			int modelCount[] = new int[modelLength];
+			int modelTotal[] = new int[modelLength];
+			for (int i = 0; i < modelLength; i++) {
+				modelCount[i] = 0;
+				modelTotal[i] = 0;
+			}
 
+			//
 			for (int i = 0; i < _prob.l; i++) {
 				double v;
 				svm_node[] x = _prob.x[i];
@@ -609,10 +617,25 @@ public class ReadExcel {
 				// System.out.println(i + ". [" + _prob.y[i] + "], v[" + v + "]");
 				if (v == _prob.y[i])
 					correct++;
+
+				//
+				for (int j = 0; j < modelLength; j++) {
+					if (model.label[j] == _prob.y[i]) {
+						modelTotal[j]++;
+						if (v == _prob.y[i])
+							modelCount[j]++;
+					}
+				}
 			}
 
 			double accuracy = (double) correct / total * 100;
-			System.out.println("Accuracy = " + accuracy + "% (" + correct + "/" + total + ")");
+			System.out.println("Total Accuracy = " + accuracy + "% (" + correct + "/" + total + ")");
+			for (int i = 0; i < modelLength; i++) {
+				accuracy = (double) modelCount[i] / modelTotal[i] * 100;
+				System.out.println(files[i] + " Accuracy = " + accuracy + "% (" + modelCount[i] + "/"
+						+ modelTotal[i] + ")");
+			}
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
