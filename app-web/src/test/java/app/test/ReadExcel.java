@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -28,12 +29,18 @@ public class ReadExcel {
 
 	svm_parameter _param;
 	String _model_file = "jcs_svm_model.txt";
-	String[] files = { "人力發展處", "人事室", "主計室" };
-	// String[] files = { "人事室", "主計室" };
+	// String[] files = { "人力發展處", "人事室", "主計室" };
 	// String[] files = { "人力發展處" };
+//	String[] files = { "人力發展處", "人事室", "主計室", "經發處", "資管處", "管考處" };
+	// String[] files = { "人事室", "主計室" };
+	 String[] files = { "主計室" };
+
+	Vector<String> vs = new Vector<String>();
+	Map<String, List<String>> KeyWordMap = new HashMap<String, List<String>>();
 
 	public static void main(String[] args) throws IOException {
 		System.out.println("start");
+		SvmUtil.init();
 		ReadExcel readExcel = new ReadExcel();
 		List<SvmModelData> list = readExcel.read(readExcel.files);
 		// readExcel.output(list);
@@ -55,7 +62,7 @@ public class ReadExcel {
 		_param.C = 1;
 		_param.eps = 1e-3;
 		_param.p = 0.1;
-		_param.shrinking = 1;
+		_param.shrinking = 1; // default 1
 		_param.probability = 0;
 		_param.nr_weight = 0;
 		_param.weight_label = new int[0];
@@ -69,25 +76,24 @@ public class ReadExcel {
 			try {
 				in = this.getClass().getClassLoader().getResourceAsStream(file + ".xlsx");
 				SvmModelData smd = read(in);
-				smd.setLabel(file);
+				smd.setLabel(SvmUtil.nameToLabel(file));
 				smd.setName(file);
-				System.out.println("--------------------------------");
+				System.out.println("--------------------------------0");
 				System.out.println(smd.getKeywords());
 				System.out.println(smd.getKeywords().size());
-				System.out.println("--------------------------------");
-				Map<String, Map<String, Float>> tfs = SvmUtil.tf(smd.getContentMap(), smd.getKeywords());
-				System.out.println("--------------------------------");
-				Map<String, Float> idfs = SvmUtil.idf(smd.getContentMap(), smd.getKeywords());
-				System.out.println("--------------------------------");
-				Map<String, Map<String, Float>> tfidfs = SvmUtil.tf_idf(tfs, idfs, smd.getKeywords());
+				System.out.println(smd.getContentMap().size());
+
+				System.out.println("--------------------------------1");
+				Map<String, Map<String, Double>> tfs = SvmUtil.tf(smd.getContentMap(), smd.getKeywords());
+				System.out.println("--------------------------------2");
+				Map<String, Double> idfs = SvmUtil.idf(smd.getContentMap(), smd.getKeywords(), smd.getName());
+				System.out.println("--------------------------------3");
+				Map<String, Map<String, Double>> tfidfs = SvmUtil.tf_idf(tfs, idfs, smd.getKeywords());
 				smd.setTfidfs(tfidfs);
-				System.out.println("--------------------------------");
-				List<Map.Entry<String, Float>> list = SvmUtil.tf_idf_sort(tfidfs, smd.getKeywords());
+				System.out.println("--------------------------------4");
+				List<Map.Entry<String, Double>> list = SvmUtil.tf_idf_sort(tfidfs, smd.getKeywords());
 				smd.setKeyList(list);
-				System.out.println("--------------------------------");
-				// output(tfidfs, smd.getKeywords());
-				// output(tfidfs, list);
-				System.out.println("--------------------------------");
+				System.out.println("--------------------------------5");
 				result.add(smd);
 
 			} catch (Exception e) {
@@ -109,9 +115,9 @@ public class ReadExcel {
 
 	public SvmModelData read(InputStream in) {
 		SvmModelData result = new SvmModelData();
-
 		Set<String> keywords = new HashSet<String>();
 		Map<String, String> contentMap = new TreeMap<String, String>();
+		Map<String, String> testContentMap = new TreeMap<String, String>();
 		Workbook wb = null;
 		try {
 			wb = WorkbookFactory.create(in);
@@ -120,13 +126,23 @@ public class ReadExcel {
 				// 排除第一行tilte
 				if (row.getRowNum() > 0) {
 					// id
-					String id = SvmUtil.trim(row.getCell(0).getStringCellValue());
+					String id = SvmUtil.trim(SvmUtil.getCellValue(row.getCell(0)));
 					// contents
-					contentMap.put(id, SvmUtil.trim(row.getCell(1).getStringCellValue()));
+					String content = SvmUtil.trim(SvmUtil.getCellValue(row.getCell(1)));
+					if (row.getRowNum() <= SvmUtil.max) {
+						contentMap.put(id, content);
+					} else {
+						testContentMap.put(id, content);
+					}
 					// keywords
-					String[] keys = SvmUtil.split(row.getCell(3).getStringCellValue(), "、");
-					for (String key : keys)
-						keywords.add(key);
+					String[] keys = SvmUtil.split(SvmUtil.getCellValue(row.getCell(3)), "、");
+					for (String key : keys) {
+						if (SvmUtil.trim(key).length() > 0)
+							keywords.add(key);
+					}
+					// keywords
+					// if (keywords.size() <= 500)
+					// keywords.addAll(SvmUtil.jiebaAnalysis(content));
 				}
 			}
 		} catch (Exception e) {
@@ -144,6 +160,7 @@ public class ReadExcel {
 
 		result.setKeywords(keywords);
 		result.setContentMap(contentMap);
+		result.setTestContentMap(testContentMap);
 		return result;
 	}
 
@@ -157,9 +174,11 @@ public class ReadExcel {
 
 		Map<String, String> contentMap = new TreeMap<String, String>();
 
-		Map<String, Map<String, Float>> tfidfs = null;
+		Map<String, String> testContentMap = new TreeMap<String, String>();
 
-		List<Map.Entry<String, Float>> keyList = null;
+		Map<String, Map<String, Double>> tfidfs = null;
+
+		List<Map.Entry<String, Double>> keyList = null;
 
 		public Double getLabel() {
 			return label;
@@ -167,20 +186,6 @@ public class ReadExcel {
 
 		public void setLabel(Double label) {
 			this.label = label;
-		}
-
-		public void setLabel(String name) {
-			switch (name) {
-			case "人力發展處":
-				setLabel(1d);
-				break;
-			case "人事室":
-				setLabel(2d);
-				break;
-			case "主計室":
-				setLabel(3d);
-				break;
-			}
 		}
 
 		public String getName() {
@@ -207,20 +212,28 @@ public class ReadExcel {
 			this.contentMap = contentMap;
 		}
 
-		public Map<String, Map<String, Float>> getTfidfs() {
+		public Map<String, Map<String, Double>> getTfidfs() {
 			return tfidfs;
 		}
 
-		public void setTfidfs(Map<String, Map<String, Float>> tfidfs) {
+		public void setTfidfs(Map<String, Map<String, Double>> tfidfs) {
 			this.tfidfs = tfidfs;
 		}
 
-		public List<Map.Entry<String, Float>> getKeyList() {
+		public List<Map.Entry<String, Double>> getKeyList() {
 			return keyList;
 		}
 
-		public void setKeyList(List<Map.Entry<String, Float>> keyList) {
+		public void setKeyList(List<Map.Entry<String, Double>> keyList) {
 			this.keyList = keyList;
+		}
+
+		public Map<String, String> getTestContentMap() {
+			return testContentMap;
+		}
+
+		public void setTestContentMap(Map<String, String> testContentMap) {
+			this.testContentMap = testContentMap;
 		}
 
 	}
@@ -236,8 +249,8 @@ public class ReadExcel {
 			wb = new XSSFWorkbook();
 			// 建立分頁
 			for (SvmModelData smd : SvmModelList) {
-				Map<String, Map<String, Float>> map = smd.getTfidfs();
-				List<Map.Entry<String, Float>> list = smd.getKeyList();
+				Map<String, Map<String, Double>> map = smd.getTfidfs();
+				List<Map.Entry<String, Double>> list = smd.getKeyList();
 				System.out.println("Sheet:" + smd.getName());
 				Sheet sheet = wb.createSheet(smd.getName());
 				sheet.createFreezePane(0, 1); // 凍結表格
@@ -247,20 +260,20 @@ public class ReadExcel {
 				Cell cell = null;
 				int cellCount = 0, rowCount = 0;
 				// title
-				for (Map.Entry<String, Float> keyMap : list) {
+				for (Map.Entry<String, Double> keyMap : list) {
 					cell = row.createCell(++cellCount);
 					cell.setCellValue(keyMap.getKey());
 				}
 				// data
 				for (String key : map.keySet()) {
-					Map<String, Float> fMap = map.get(key);
+					Map<String, Double> fMap = map.get(key);
 					// doc name
 					row = sheet.createRow(++rowCount);
 					cellCount = 0;
 					cell = row.createCell(cellCount);
 					cell.setCellValue(key);
 					//
-					for (Map.Entry<String, Float> keyMap : list) {
+					for (Map.Entry<String, Double> keyMap : list) {
 						String word = keyMap.getKey();
 						cell = row.createCell(++cellCount);
 						cell.setCellValue(fMap.get(word));
@@ -271,221 +284,9 @@ public class ReadExcel {
 				row = sheet.createRow(++rowCount);
 				cell = row.createCell(cellCount);
 				cell.setCellValue("total");
-				for (Map.Entry<String, Float> keyMap : list) {
+				for (Map.Entry<String, Double> keyMap : list) {
 					cell = row.createCell(++cellCount);
 					cell.setCellValue(keyMap.getValue());
-				}
-			}
-			// fileOut.close();
-			wb.write(fileOut);
-			// wb.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (wb != null) {
-					wb.close();
-					wb = null;
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			try {
-				if (fileOut != null) {
-					fileOut.close();
-					fileOut = null;
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			System.out.println("匯出Excel End");
-		}
-	}
-
-	public void outputX(List<SvmModelData> SvmModelList) {
-		System.out.println("匯出Excel Start");
-		FileOutputStream fileOut = null;
-		Workbook wb = null;
-		try {
-			// 設定檔案輸出串流到指定位置
-			fileOut = new FileOutputStream("report.xlsx");
-			// 宣告XSSFWorkbook
-			wb = new XSSFWorkbook();
-			// 建立分頁
-			for (SvmModelData smd : SvmModelList) {
-				Map<String, Map<String, Float>> map = smd.getTfidfs();
-				List<Map.Entry<String, Float>> list = smd.getKeyList();
-				System.out.println("Sheet:" + smd.getName());
-				Sheet sheet = wb.createSheet(smd.getName());
-				sheet.createFreezePane(1, 0); // 凍結表格
-				// 宣告列物件
-				Row row = sheet.createRow(0);
-				// 宣告表格物件
-				Cell cell = null;
-				int cellCount = 0, rowCount = 0;
-				// title
-				for (String key : map.keySet()) {
-					cell = row.createCell(++cellCount);
-					cell.setCellValue(key);
-				}
-				cell = row.createCell(++cellCount);
-				cell.setCellValue("total");
-				//
-				for (Map.Entry<String, Float> keyMap : list) {
-					String word = keyMap.getKey();
-					// word
-					row = sheet.createRow(++rowCount);
-					cellCount = 0;
-					cell = row.createCell(cellCount);
-					cell.setCellValue(word);
-					//
-					for (String key : map.keySet()) {
-						Map<String, Float> fMap = map.get(key);
-						cell = row.createCell(++cellCount);
-						cell.setCellValue(fMap.get(word));
-					}
-					cell = row.createCell(++cellCount);
-					cell.setCellValue(keyMap.getValue());
-				}
-			}
-			// fileOut.close();
-			wb.write(fileOut);
-			// wb.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (wb != null) {
-					wb.close();
-					wb = null;
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			try {
-				if (fileOut != null) {
-					fileOut.close();
-					fileOut = null;
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			System.out.println("匯出Excel End");
-		}
-	}
-
-	/**
-	 * 輸出之Excel
-	 * 
-	 * @param map
-	 * @param keywords
-	 */
-	public void output(Map<String, Map<String, Float>> map, List<Map.Entry<String, Float>> list) {
-		System.out.println("匯出Excel Start");
-		FileOutputStream fileOut = null;
-		Workbook wb = null;
-		try {
-			// 設定檔案輸出串流到指定位置
-			fileOut = new FileOutputStream("report.xlsx");
-			// 宣告XSSFWorkbook
-			wb = new XSSFWorkbook();
-			// 建立分頁
-			Sheet sheet = wb.createSheet("工作表");
-			sheet.createFreezePane(1, 0); // 凍結表格
-			// 宣告列物件
-			Row row = sheet.createRow(0);
-			// 宣告表格物件
-			Cell cell = null;
-			int cellCount = 0, rowCount = 0;
-			// title
-			for (String key : map.keySet()) {
-				cell = row.createCell(++cellCount);
-				cell.setCellValue(key);
-			}
-			cell = row.createCell(++cellCount);
-			cell.setCellValue("total");
-			//
-			for (Map.Entry<String, Float> keyMap : list) {
-				String word = keyMap.getKey();
-				// word
-				row = sheet.createRow(++rowCount);
-				cellCount = 0;
-				cell = row.createCell(cellCount);
-				cell.setCellValue(word);
-				//
-				for (String key : map.keySet()) {
-					Map<String, Float> fMap = map.get(key);
-					cell = row.createCell(++cellCount);
-					cell.setCellValue(fMap.get(word));
-				}
-				cell = row.createCell(++cellCount);
-				cell.setCellValue(keyMap.getValue());
-			}
-			// fileOut.close();
-			wb.write(fileOut);
-			// wb.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (wb != null) {
-					wb.close();
-					wb = null;
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			try {
-				if (fileOut != null) {
-					fileOut.close();
-					fileOut = null;
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			System.out.println("匯出Excel End");
-		}
-	}
-
-	/**
-	 * 輸出之Excel
-	 * 
-	 * @param map
-	 * @param keywords
-	 */
-	public void output(Map<String, Map<String, Float>> map, Set<String> keywords) {
-		System.out.println("匯出Excel Start");
-		FileOutputStream fileOut = null;
-		Workbook wb = null;
-		try {
-			// 設定檔案輸出串流到指定位置
-			fileOut = new FileOutputStream("report.xlsx");
-			// 宣告XSSFWorkbook
-			wb = new XSSFWorkbook();
-			// 建立分頁
-			Sheet sheet = wb.createSheet("工作表");
-			// 宣告列物件
-			Row row = sheet.createRow(0);
-			// 宣告表格物件
-			Cell cell = null;
-			int cellCount = 0, rowCount = 0;
-			// title
-			for (String key : map.keySet()) {
-				cell = row.createCell(++cellCount);
-				cell.setCellValue(key);
-			}
-			//
-			for (String word : keywords) {
-				// word
-				row = sheet.createRow(++rowCount);
-				cellCount = 0;
-				cell = row.createCell(cellCount);
-				cell.setCellValue(word);
-				//
-				for (String key : map.keySet()) {
-					Map<String, Float> fMap = map.get(key);
-					cell = row.createCell(++cellCount);
-					cell.setCellValue(fMap.get(word));
 				}
 			}
 			// fileOut.close();
@@ -519,29 +320,53 @@ public class ReadExcel {
 	 * @param SvmModelList
 	 */
 	public void svm(List<SvmModelData> SvmModelList) {
-		List<String> keywords = getKeyWords(SvmModelList, 30);
+		List<String> keywords = getKeyWords(SvmModelList, SvmUtil.KeyWordDepth);
 		System.out.println("keywords.size():" + keywords.size());
 		System.out.println(keywords);
 
 		svm_problem _problem = parseVector(SvmModelList, keywords);
+		// 訓練
 		training(_problem);
-		testing(_problem);
+		// // 測試
+		// Map<String, Map<String, String>> testResultData = testing(_problem);
+		Map<String, Map<String, String>> testResultData = testing(SvmModelList, keywords);
+		// 輸出結果
+		outputResult(SvmModelList, testResultData);
 	}
 
 	public List<String> getKeyWords(List<SvmModelData> SvmModelList, int d) {
 		List<String> result = new ArrayList<String>();
+
+		// 排除出現在其他類別的關鍵字
+		Map<String, Set<String>> ignoreMap = new HashMap<String, Set<String>>();
+		for (String file : files) {
+			Set<String> ignoreSet = new HashSet<String>();
+			for (SvmModelData smd : SvmModelList) {
+				if (!file.equals(smd.getName())) {
+					for (String key : smd.getKeywords())
+						ignoreSet.add(key);
+				}
+			}
+			ignoreMap.put(file, ignoreSet);
+		}
+
 		for (SvmModelData smd : SvmModelList) {
-			List<Map.Entry<String, Float>> list = smd.getKeyList();
+			Set<String> ignoreSet = ignoreMap.get(smd.getName());
+			List<String> KeyWordList = new ArrayList<String>();
+			List<Map.Entry<String, Double>> list = smd.getKeyList();
 			int count = 1, index = 0, size = list.size();
 			while (count <= d && index < size) {
-				Map.Entry<String, Float> keyMap = list.get(index++);
+				Map.Entry<String, Double> keyMap = list.get(index++);
 				String key = keyMap.getKey();
-				if (!result.contains(key)) {
+//				if (!result.contains(key) && !ignoreSet.contains(key)) {
+				if (!result.contains(key) && !ignoreSet.contains(key)) {
 					System.out.println(smd.getName() + ":" + key + "[" + keyMap.getValue() + "][" + count + "]");
 					result.add(key);
+					KeyWordList.add(key);
 					count++;
 				}
 			}
+			KeyWordMap.put(smd.getName(), KeyWordList);
 			System.out.println("---------------------------------------");
 		}
 		return result;
@@ -549,22 +374,24 @@ public class ReadExcel {
 
 	public svm_problem parseVector(List<SvmModelData> SvmModelList, List<String> keywords) {
 		svm_problem _prob = new svm_problem();
+		vs = new Vector<String>();
 		Vector<Double> vy = new Vector<Double>();
 		Vector<svm_node[]> vx = new Vector<svm_node[]>();
 
-		int size = keywords.size();
 		for (SvmModelData smd : SvmModelList) {
-			Map<String, String> contentMap = smd.getContentMap();
-			for (String content : contentMap.values()) {
-				svm_node[] x = new svm_node[size];
-				for (int i = 0; i < size; i++) {
-					String keyword = keywords.get(i);
-					x[i] = new svm_node();
-					x[i].index = i;
-					x[i].value = SvmUtil.frequency(content, keyword) > 0 ? 1 : 0;
-				}
+			Map<String, String> contentMap = new TreeMap<String, String>();
+			for (String key : smd.getContentMap().keySet()) {
+				contentMap.put(key, smd.getContentMap().get(key));
+			}
+//			for (String key : smd.getTestContentMap().keySet()) {
+//				contentMap.put(key, smd.getTestContentMap().get(key));
+//			}
+			for (String key : contentMap.keySet()) {
+				String content = contentMap.get(key);
+				svm_node[] x = SvmUtil.parseSvmNode(content, keywords);
 				vx.addElement(x);
 				vy.addElement(smd.getLabel());
+				vs.addElement(key);
 			}
 			System.out.println("---------------------------------------");
 		}
@@ -592,8 +419,9 @@ public class ReadExcel {
 		}
 	}
 
-	public void testing(svm_problem _prob) {
-		System.out.println("Training...");
+	public Map<String, Map<String, String>> testing(svm_problem _prob) {
+		System.out.println("Testing...");
+		Map<String, Map<String, String>> result = new HashMap<String, Map<String, String>>();
 
 		svm_model model;
 		int correct = 0, total = 0;
@@ -606,24 +434,29 @@ public class ReadExcel {
 			for (int i = 0; i < modelLength; i++) {
 				modelCount[i] = 0;
 				modelTotal[i] = 0;
+				result.put(SvmUtil.labelToName(model.label[i]), new TreeMap<String, String>());
 			}
 
 			//
 			for (int i = 0; i < _prob.l; i++) {
-				double v;
 				svm_node[] x = _prob.x[i];
-				v = svm.svm_predict(model, x);
+				double v = svm.svm_predict(model, x);
 				total++;
 				// System.out.println(i + ". [" + _prob.y[i] + "], v[" + v + "]");
 				if (v == _prob.y[i])
 					correct++;
-
 				//
 				for (int j = 0; j < modelLength; j++) {
 					if (model.label[j] == _prob.y[i]) {
 						modelTotal[j]++;
-						if (v == _prob.y[i])
+						if (v == _prob.y[i]) {
 							modelCount[j]++;
+						} else {
+							String contentId = vs.elementAt(i);
+							// System.out.println(SvmUtil.labelToName(_prob.y[i]) + "[" + contentId + "] >> " + SvmUtil
+							// .labelToName(v));
+							result.get(SvmUtil.labelToName(_prob.y[i])).put(contentId, SvmUtil.labelToName(v));
+						}
 					}
 				}
 			}
@@ -632,12 +465,153 @@ public class ReadExcel {
 			System.out.println("Total Accuracy = " + accuracy + "% (" + correct + "/" + total + ")");
 			for (int i = 0; i < modelLength; i++) {
 				accuracy = (double) modelCount[i] / modelTotal[i] * 100;
-				System.out.println(files[i] + " Accuracy = " + accuracy + "% (" + modelCount[i] + "/"
+				System.out.println(SvmUtil.labelToName(model.label[i]) + " Accuracy = " + accuracy + "% ("
+						+ modelCount[i] + "/"
 						+ modelTotal[i] + ")");
 			}
 
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+		return result;
+	}
+
+	public Map<String, Map<String, String>> testing(List<SvmModelData> SvmModelList, List<String> keywords) {
+		System.out.println("Testing...");
+		Map<String, Map<String, String>> result = new HashMap<String, Map<String, String>>();
+
+		svm_model model;
+		int correct = 0, total = 0;
+		try {
+			model = svm.svm_load_model(_model_file);
+
+			for (SvmModelData smd : SvmModelList) {
+				Map<String, String> errorMap = new TreeMap<String, String>();
+				int modelCount = 0, modelTotal = 0;
+
+				
+				Map<String, String> contentMap = new TreeMap<String, String>();
+				for (String key : smd.getContentMap().keySet()) {
+					contentMap.put(key, smd.getContentMap().get(key));
+				}
+//				for (String key : smd.getTestContentMap().keySet()) {
+//					contentMap.put(key, smd.getTestContentMap().get(key));
+//				}
+
+				for (String key : contentMap.keySet()) {
+					total++;
+					modelTotal++;
+					String content = contentMap.get(key);
+					svm_node[] x = SvmUtil.parseSvmNode(content, keywords);
+					double v = svm.svm_predict(model, x);
+					if (v == smd.getLabel()) {
+						correct++;
+						modelCount++;
+					} else {
+						errorMap.put(key, SvmUtil.labelToName(v));
+					}
+				}
+				result.put(smd.getName(), errorMap);
+				double accuracy = (double) modelCount / modelTotal * 100;
+				System.out.println(smd.getName() + " Accuracy = " + accuracy + "% (" + modelCount + "/" + modelTotal
+						+ ")");
+			}
+
+			double accuracy = (double) correct / total * 100;
+			System.out.println("Total Accuracy = " + accuracy + "% (" + correct + "/" + total + ")");
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	/**
+	 * 輸出結果
+	 * 
+	 * @param SvmModelList
+	 * @param data
+	 */
+	public void outputResult(List<SvmModelData> SvmModelList, Map<String, Map<String, String>> data) {
+		System.out.println("匯出Excel Start");
+		FileOutputStream fileOut = null;
+		Workbook wb = null;
+		try {
+			// 設定檔案輸出串流到指定位置
+			fileOut = new FileOutputStream("result.xlsx");
+			// 宣告XSSFWorkbook
+			wb = new XSSFWorkbook();
+			// 建立分頁
+			for (String sheetName : data.keySet()) {
+				System.out.println("Sheet:" + sheetName);
+				Sheet sheet = wb.createSheet(sheetName);
+				sheet.createFreezePane(0, 1); // 凍結表格
+				// 宣告列物件
+				Row row = sheet.createRow(0);
+				// 宣告表格物件
+				Cell cell = null;
+				int cellCount = 0, rowCount = 0;
+				// title
+				String[] titles = { "文件ID", "文件內容", "SVM判定" };
+				for (String title : titles) {
+					cell = row.createCell(cellCount++);
+					cell.setCellValue(title);
+				}
+
+				for (SvmModelData smd : SvmModelList) {
+					if (sheetName.equals(smd.getName())) {
+						Map<String, String> dataMap = data.get(sheetName);
+						for (String id : dataMap.keySet()) {
+							row = sheet.createRow(++rowCount);
+							cell = row.createCell(0);
+							cell.setCellValue(id);
+							cell = row.createCell(1);
+							cell.setCellValue(smd.getContentMap().get(id));
+							cell = row.createCell(2);
+							cell.setCellValue(dataMap.get(id));
+						}
+					}
+				}
+			}
+
+			// SVM建模關鍵字
+			Sheet sheet = wb.createSheet("關鍵字" + SvmUtil.KeyWordDepth);
+			sheet.createFreezePane(1, 0); // 凍結表格
+			int rowCount = 0;
+			for (String key : KeyWordMap.keySet()) {
+				int cellCount = 0;
+				Row row = sheet.createRow(rowCount++);
+				Cell cell = row.createCell(cellCount++);
+				cell.setCellValue(key);
+
+				List<String> list = KeyWordMap.get(key);
+				for (String s : list) {
+					cell = row.createCell(cellCount++);
+					cell.setCellValue(s);
+				}
+			}
+
+			wb.write(fileOut);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (wb != null) {
+					wb.close();
+					wb = null;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			try {
+				if (fileOut != null) {
+					fileOut.close();
+					fileOut = null;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			System.out.println("匯出Excel End");
 		}
 	}
 }

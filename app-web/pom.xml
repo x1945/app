@@ -311,6 +311,12 @@
 			<artifactId>sqlite-jdbc</artifactId>
 			<version>3.25.2</version>
 		</dependency>
+		<!-- jieba -->
+		<dependency>
+			<groupId>com.huaban</groupId>
+			<artifactId>jieba-analysis</artifactId>
+			<version>1.0.2</version>
+		</dependency>
 
 		<!-- Java OCR -->
 		<dependency>
