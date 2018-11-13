@@ -10,12 +10,6 @@ import java.io.File;
  */
 public class DocModel extends SvmModel {
 
-	DocModel() {
-		// set parm
-		// svm_parameter param = new svm_parameter();
-		// setParam(param);
-	}
-
 	@Override
 	String[] types() {
 		return new String[] { "人力發展處", "人事室", "主計室", "經發處", "資管處", "管考處" };

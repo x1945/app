@@ -223,6 +223,12 @@ public class SvmUtil {
 		return list;
 	}
 
+	/**
+	 * 取得CELL值
+	 * 
+	 * @param cell
+	 * @return
+	 */
 	public static String getCellValue(Cell cell) {
 		if (cell != null) {
 			if (cell.getCellType() == CellType.NUMERIC) {
@@ -234,6 +240,12 @@ public class SvmUtil {
 		return "";
 	}
 
+	/**
+	 * 將模型學習資料轉換為向量點
+	 * 
+	 * @param svmModel
+	 * @return
+	 */
 	public static svm_problem parseSvmProblem(SvmModel svmModel) {
 		svm_problem result = new svm_problem();
 		Vector<Double> vy = new Vector<Double>();
@@ -280,10 +292,24 @@ public class SvmUtil {
 		return result;
 	}
 
+	/**
+	 * 讀取EXCEL(學習&測試資料)
+	 * 
+	 * @param filePath
+	 * @return
+	 */
 	public static Map<String, String> loadExcel(String filePath) {
 		return loadExcel(filePath, 1, _max);
 	}
 
+	/**
+	 * 讀取EXCEL(學習&測試資料)
+	 * 
+	 * @param filePath
+	 * @param start
+	 * @param end
+	 * @return
+	 */
 	public static Map<String, String> loadExcel(String filePath, int start, int end) {
 		Map<String, String> result = new TreeMap<String, String>();
 		Workbook wb = null;
@@ -314,6 +340,12 @@ public class SvmUtil {
 		return result;
 	}
 
+	/**
+	 * 讀取關鍵字
+	 * 
+	 * @param filePath
+	 * @return
+	 */
 	public static List<String> loadKeywords(String filePath) {
 		List<String> result = new ArrayList<String>();
 		Workbook wb = null;
@@ -354,6 +386,12 @@ public class SvmUtil {
 		return result;
 	}
 
+	/**
+	 * 關閉
+	 * 
+	 * @param in
+	 * @param wb
+	 */
 	public static void close(InputStream in, Workbook wb) {
 		try {
 			if (wb != null) {
