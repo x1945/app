@@ -6,9 +6,11 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeAction;
 import org.elasticsearch.action.admin.indices.analyze.AnalyzeRequestBuilder;
@@ -70,6 +72,29 @@ public class ElasticSearchService {
 		// 迴圈賦值
 		for (AnalyzeToken at : ikTokenList) {
 			LOG.debug("[{}][{}]", at.getPosition(), at.getTerm());
+			result.add(at.getTerm());
+		}
+		return result;
+	}
+
+	/**
+	 * 分析文字
+	 * 
+	 * @param client
+	 */
+	public Set<String> analyze2(TransportClient client, String word) {
+		Set<String> result = new HashSet<String>();
+		// 呼叫 IK 分詞分詞
+		AnalyzeRequestBuilder ikRequest = new AnalyzeRequestBuilder(client,
+				AnalyzeAction.INSTANCE);
+		ikRequest.setAnalyzer("ik_smart");
+		// ikRequest.setAnalyzer("keyword");
+		// ikRequest.setAnalyzer("ik_max_word");
+		ikRequest.setText(word);
+		List<AnalyzeToken> ikTokenList = ikRequest.execute().actionGet().getTokens();
+		// 迴圈賦值
+		for (AnalyzeToken at : ikTokenList) {
+			// LOG.debug("[{}][{}]", at.getPosition(), at.getTerm());
 			result.add(at.getTerm());
 		}
 		return result;

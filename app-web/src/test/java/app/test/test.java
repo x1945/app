@@ -26,7 +26,7 @@ public class test {
 		System.out.println(30%30);
 		int docNum= 10, docCount=10;
 		System.out.println("Math.log docNum / docCount:"+ Math.log((double) docNum / docCount));
-		
+		System.out.println(SvmUtil.parseWord("你愛我嗎"));
 		String test = "中華民國,中華民國,中華民國,中華民國,中華民國,中華民國,中華民國,中華民國,中華民國,中華民國";
 		String ssss = "中華民國";
 		System.out.println(ssss.matches("[\\u4e00-\\u9fa5]+"));
