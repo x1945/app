@@ -1,9 +1,11 @@
 package app.svm;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import libsvm.svm;
@@ -19,6 +21,9 @@ import libsvm.svm_problem;
  *
  */
 public abstract class SvmModel {
+
+	final String keywordsFile = "keywords.xlsx";
+	final String svmModelFile = "svm_model.txt";
 
 	//
 	Map<Double, String> L2N = new HashMap<Double, String>();
@@ -109,6 +114,50 @@ public abstract class SvmModel {
 	}
 
 	/**
+	 * 依TF-IDF解析關鍵字
+	 */
+	public void parseKeywords(int depth) {
+		System.out.println("TF-IDF解析關鍵字開始...");
+		// data
+		if (trainData == null) {
+			trainData = new HashMap<String, Map<String, String>>();
+			for (String type : types()) {
+				Map<String, String> map = SvmUtil.loadExcel(path() + type + ".xlsx", 1, 300);
+				trainData.put(type, map);
+			}
+		}
+		// parseKeywords
+		Map<String, List<String>> keywordMap = new HashMap<String, List<String>>();
+		for (String type : types()) {
+			System.out.println("type:" + type);
+			Set<String> set = SvmUtil.loadExcelKeywords(path() + type + ".xlsx");
+			Map<String, String> contentMap = trainData.get(type);
+			System.out.println("TF.......");
+			Map<String, Map<String, Double>> tfs = SvmUtil.tf(contentMap, set);
+			System.out.println("IDF......");
+			Map<String, Double> idfs = SvmUtil.idf(contentMap, set);
+			System.out.println("TF-IDF...");
+			Map<String, Map<String, Double>> tfidfs = SvmUtil.tf_idf(tfs, idfs, set);
+			System.out.println("依TF-IDF取前" + depth + "關鍵字");
+			List<Map.Entry<String, Double>> list = SvmUtil.tf_idf_sort(tfidfs, set);
+			//
+			List<String> keywordList = new ArrayList<String>();
+			int count = 1, index = 0, size = list.size();
+			while (count <= depth && index < size) {
+				Map.Entry<String, Double> keyMap = list.get(index++);
+				String key = keyMap.getKey();
+				keywordList.add(key);
+				count++;
+			}
+			keywordMap.put(type, keywordList);
+		}
+		//
+		System.out.println("解析關鍵字完成,輸出" + keywordsFile);
+		SvmUtil.outputKeywords(this, keywordMap, depth);
+		System.out.println("TF-IDF解析關鍵字結束...");
+	}
+
+	/**
 	 * 學習
 	 * 
 	 */
@@ -124,14 +173,14 @@ public abstract class SvmModel {
 		}
 		// keywords
 		if (keywords == null)
-			keywords = SvmUtil.loadKeywords(path() + "keywords.xlsx");
+			keywords = SvmUtil.loadKeywords(path() + keywordsFile);
 
 		// parse svm_problem
 		svm_problem svmProblem = SvmUtil.parseSvmProblem(this);
 		try {
 			svm_model model = svm.svm_train(svmProblem, getParam());
-			System.out.println("學習完成,產生模型檔:" + path() + "svm_model.txt");
-			svm.svm_save_model(path() + "svm_model.txt", model);
+			System.out.println("學習完成,產生模型檔:" + path() + svmModelFile);
+			svm.svm_save_model(path() + svmModelFile, model);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -153,12 +202,12 @@ public abstract class SvmModel {
 		}
 		// keywords
 		if (keywords == null)
-			keywords = SvmUtil.loadKeywords(path() + "keywords.xlsx");
+			keywords = SvmUtil.loadKeywords(path() + keywordsFile);
 
 		// testing
 		int correct = 0, total = 0;
 		try {
-			svm_model model = svm.svm_load_model(path() + "svm_model.txt");
+			svm_model model = svm.svm_load_model(path() + svmModelFile);
 
 			Map<String, Map<String, String>> data = getTestData();
 			for (String typeName : data.keySet()) {
@@ -217,10 +266,10 @@ public abstract class SvmModel {
 		String result = "";
 		// keywords
 		if (keywords == null)
-			keywords = SvmUtil.loadKeywords(path() + "keywords.xlsx");
+			keywords = SvmUtil.loadKeywords(path() + keywordsFile);
 		//
 		try {
-			svm_model model = svm.svm_load_model(path() + "svm_model.txt");
+			svm_model model = svm.svm_load_model(path() + svmModelFile);
 			svm_node[] x = SvmUtil.parseSvmNode(content, keywords);
 			double v = svm.svm_predict(model, x);
 			result = this.labelToName(v);

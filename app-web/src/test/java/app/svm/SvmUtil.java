@@ -2,11 +2,13 @@ package app.svm;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,6 +22,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import libsvm.svm_node;
 import libsvm.svm_problem;
@@ -384,6 +387,102 @@ public class SvmUtil {
 			close(in, wb);
 		}
 		return result;
+	}
+
+	/**
+	 * 讀取EXCEL檔的關鍵字
+	 * 
+	 * @param filePath
+	 * @return
+	 */
+	public static Set<String> loadExcelKeywords(String filePath) {
+		Set<String> result = new HashSet<String>();
+		Workbook wb = null;
+		InputStream in = null;
+		File file = new File(filePath);
+		try {
+			in = new FileInputStream(file);
+			wb = WorkbookFactory.create(in);
+			Sheet sheet = wb.getSheetAt(0);
+			for (Row row : sheet) {
+				int rowIndex = row.getRowNum();
+				// 排除第一行tilte
+				if (rowIndex > 0) {
+					// keywords
+					String[] keys = SvmUtil.split(SvmUtil.getCellValue(row.getCell(3)), "、");
+					for (String key : keys) {
+						if (SvmUtil.trim(key).length() > 0)
+							result.add(key);
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			close(in, wb);
+		}
+		return result;
+	}
+
+	/**
+	 * 輸出結果
+	 * 
+	 * @param SvmModelList
+	 * @param data
+	 */
+	public static void outputKeywords(SvmModel svmModel, Map<String, List<String>> data, int depth) {
+		FileOutputStream fileOut = null;
+		Workbook wb = null;
+		try {
+			// 設定檔案輸出串流到指定位置
+			fileOut = new FileOutputStream(svmModel.path() + svmModel.keywordsFile);
+			// 宣告XSSFWorkbook
+			wb = new XSSFWorkbook();
+			// 建立分頁
+			Sheet sheet = wb.createSheet("keywords");
+			sheet.createFreezePane(0, 1); // 凍結表格
+			// 宣告列物件
+			Row row = sheet.createRow(0);
+			// 宣告表格物件
+			Cell cell = null;
+			int cellCount = 0, rowCount = 0;
+			// title
+			for (String type : svmModel.types()) {
+				cell = row.createCell(cellCount++);
+				cell.setCellValue(type);
+			}
+
+			for (int y = 0; y < depth; y++) {
+				row = sheet.createRow(++rowCount);
+				cellCount = 0;
+				for (String type : svmModel.types()) {
+					List<String> list = data.get(type);
+					cell = row.createCell(cellCount++);
+					cell.setCellValue(list.get(y));
+				}
+			}
+
+			wb.write(fileOut);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (wb != null) {
+					wb.close();
+					wb = null;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			try {
+				if (fileOut != null) {
+					fileOut.close();
+					fileOut = null;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**
