@@ -46,7 +46,7 @@ public class test {
 		testSet.add("中華民國");
 		System.out.println(testSet);
 
-//		jiebaAnalysis();
+		jiebaAnalysis();
 		// float value = (float) Math.log(987654 / 999);
 		// System.out.println(value);
 		// int i=100;
@@ -74,9 +74,10 @@ public class test {
 	}
 
 	private static void jiebaAnalysis() {
-//		WordDictionary dictAdd = WordDictionary.getInstance();
-//		Path path = Paths.get("d:\\jieba\\dict.txt");
-//		dictAdd.loadUserDict(path);
+		System.out.println("jieba Analysis -------------------");
+		WordDictionary dictAdd = WordDictionary.getInstance();
+		Path path = Paths.get("d:\\jieba\\dict.tw.txt");
+		dictAdd.loadUserDict(path);
 
 		JiebaSegmenter segmenter = new JiebaSegmenter();
 
