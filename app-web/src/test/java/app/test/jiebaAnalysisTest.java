@@ -64,8 +64,12 @@ public class jiebaAnalysisTest {
 	public static String jiebaAnalysis(String input) {
 		return jiebaAnalysis(input, false);
 	}
-
+	
 	public static String jiebaAnalysis(String input, boolean stopWord) {
+		return jiebaAnalysis(input, stopWord, 1);
+	}
+
+	public static String jiebaAnalysis(String input, boolean stopWord, int len) {
 		StringBuilder sb = new StringBuilder();
 		List<SegToken> list = segmenter.process(input, SegMode.SEARCH);
 		// List<SegToken> list = segmenter.process(sentence, SegMode.INDEX);
@@ -73,7 +77,7 @@ public class jiebaAnalysisTest {
 			String s = SvmUtil.trim(st.word);
 			if (s.matches("[\\u4e00-\\u9fa5]+") && s.length() > 0) {
 				if (stopWord) {
-					if (filter(s)) {
+					if (filter(s, len)) {
 						if (sb.length() > 0)
 							sb.append("、");
 						sb.append(s);
@@ -87,9 +91,13 @@ public class jiebaAnalysisTest {
 		}
 		return sb.toString();
 	}
-
+	
 	public static boolean filter(String input) {
-		if (input.matches("[\\u4e00-\\u9fa5]+") && input.length() > 1) {
+		return filter(input, 1);
+	}
+
+	public static boolean filter(String input, int len) {
+		if (input.matches("[\\u4e00-\\u9fa5]+") && input.length() >= len) {
 			if (!stopWords.contains(input))
 				return true;
 		}
