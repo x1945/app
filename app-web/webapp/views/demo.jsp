@@ -225,7 +225,7 @@ button, input[type=button] {
 	</footer>
 </body>
 
-<script src="Translator.js?r=${random}"></script>
+<script src="/app-web/views/Translator.js?r=${random}"></script>
 
 <script>
 	var translator = new Translator();

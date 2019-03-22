@@ -32,7 +32,8 @@ public class jiebaAnalysisTest {
 		Path path = Paths.get("d:\\jieba\\dict.big.txt");
 		dictAdd.loadUserDict(path);
 
-		stopWords = readStopWords("d:\\jieba\\stop_words.txt");
+		// stopWords = readStopWords("d:\\jieba\\stop_words.txt");
+		stopWords = readStopWords("d:\\jieba\\stop_words_20181116.txt");
 		//
 		segmenter = new JiebaSegmenter();
 		System.out.println("jieba Analysis init end ...");
@@ -64,7 +65,7 @@ public class jiebaAnalysisTest {
 	public static String jiebaAnalysis(String input) {
 		return jiebaAnalysis(input, false);
 	}
-	
+
 	public static String jiebaAnalysis(String input, boolean stopWord) {
 		return jiebaAnalysis(input, stopWord, 1);
 	}
@@ -91,7 +92,7 @@ public class jiebaAnalysisTest {
 		}
 		return sb.toString();
 	}
-	
+
 	public static boolean filter(String input) {
 		return filter(input, 1);
 	}

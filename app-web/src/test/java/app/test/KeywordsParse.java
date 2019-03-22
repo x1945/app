@@ -25,7 +25,7 @@ public class KeywordsParse {
 	// static String[] files = { "人力發展處", "人事室", "主計室", "經發處", "資管處", "管考處" };
 	static String[] files = { "08_綜合規劃處_測試建模用sample", "9A_檔管局_測試建模用sample", "10_產發處_測試建模用sample",
 			"12_國土區域離島發展處_測試建模用sample", "13_社會發展處_測試建模用sample", "18_秘書室_測試建模用sample", "19_政風室_測試建模用sample",
-			"20_法協中心_測試建模用sample", "30_媒體溝通小組_測試建模用sample", "32_國會及新聞聯絡中心_測試建模用sample" };
+			"20_法協中心_測試建模用sample", "30_媒體溝通小組_測試建模用sample", "32_國會及新聞聯絡中心_測試建模用sample", "33_中興新村活化專案辦公室_測試用sample" };
 
 	public static void main(String[] args) throws Exception {
 		jiebaAnalysisTest.init();
@@ -69,11 +69,11 @@ public class KeywordsParse {
 			// sheet.autoSizeColumn(5);
 			// sheet.autoSizeColumn(6);
 			// System.out.println(sheet.getDefaultColumnWidth());
-			// sheet.setColumnWidth(4, 20);	
+			// sheet.setColumnWidth(4, 20);
 			sheet.setColumnWidth(4, 8000);
 			sheet.setColumnWidth(5, 8000);
 			sheet.setColumnWidth(6, 8000);
-			sheet.setColumnWidth(7, 8000);
+//			sheet.setColumnWidth(7, 8000);
 
 			Row titleRow = sheet.getRow(0);
 			Cell cell = titleRow.createCell(4);
@@ -88,11 +88,10 @@ public class KeywordsParse {
 			cell.setCellValue("jieba關鍵字");
 			cell.setCellStyle(style);
 			//
-			cell = titleRow.createCell(7);
-			cell.setCellValue("jieba關鍵字(排除1個字)");
-			cell.setCellStyle(style);
-			
-			
+//			cell = titleRow.createCell(7);
+//			cell.setCellValue("jieba關鍵字(排除1個字)");
+//			cell.setCellStyle(style);
+
 			for (Row row : sheet) {
 				int rowIndex = row.getRowNum();
 				// 排除第一行tilte
@@ -114,7 +113,7 @@ public class KeywordsParse {
 							}
 						}
 					}
-//					 System.out.println(list);
+					// System.out.println(list);
 					result.put(rowIndex, list);
 					cell = row.createCell(4);
 					cell.setCellValue(sb.toString());
@@ -133,10 +132,10 @@ public class KeywordsParse {
 					cell.setCellValue(content2);
 					cell.setCellStyle(style);
 					//
-					String content3 = jiebaAnalysisTest.jiebaAnalysis(content, true, 2);
-					cell = row.createCell(7);
-					cell.setCellValue(content3);
-					cell.setCellStyle(style);
+//					String content3 = jiebaAnalysisTest.jiebaAnalysis(content, true, 2);
+//					cell = row.createCell(7);
+//					cell.setCellValue(content3);
+//					cell.setCellStyle(style);
 				}
 			}
 

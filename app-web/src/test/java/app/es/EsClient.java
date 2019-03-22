@@ -30,8 +30,8 @@ public class EsClient {
 	public static int processCount = 0;
 	public static int totalCount = 0;
 	private static long processTime = 0;
-//	private static final String host = "localhost";
-	 private static final String host = "192.168.1.96";
+	private static final String host = "localhost";
+//	 private static final String host = "192.168.1.96";
 	private static final int port = 9300;
 
 	// 【獲取TransportClient 的方法】

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -28,7 +29,7 @@ public class Test3 {
 	private static final String 研究結案報告 = "\\\\AP4-File\\e\\COA-TmpPDF\\fullText\\研究結案報告";
 	private static final String 計畫書 = "\\\\AP4-File\\e\\COA-TmpPDF\\fullText\\計畫書";
 	private static final String 頁面呈現資訊 = "\\\\AP4-File\\e\\COA-TmpPDF\\fullText\\頁面呈現資訊";
-	private static final String 關鍵詞 = "D:\\BTDownload\\main3.dic";
+	private static final String 關鍵詞 = "D:\\BTDownload\\main.dic";
 
 	private final String[] eFields = { "cpid", "cname", "yr", "category", "categoryName",
 			"type", "typeName", "direcotrName", "directorDeptid", "directorDeptName",
@@ -48,17 +49,17 @@ public class Test3 {
 		
 		// File file = new File(頁面呈現資訊 + "\\1042738.txt");
 		// File file = new File(頁面呈現資訊 + "\\1000005.txt");
-		 File file = new File(計畫書 + "\\1000005.txt");
+//		 File file = new File(計畫書 + "\\1000005.txt");
+//		 
+//		 System.out.println(file.getAbsolutePath());
+//		 System.out.println(file.getName());
+//		 System.out.println(file.getPath());
 		 
-		 System.out.println(file.getAbsolutePath());
-		 System.out.println(file.getName());
-		 System.out.println(file.getPath());
-		 
-	//	File file = new File(關鍵詞);
+		File file = new File(關鍵詞);
 		// loadFile(file);
-		// toWrite(file, "D:\\BTDownload\\main2.dic");
-		// toWrite2(file, "D:\\BTDownload\\main2.dic");
-		// toWrite2(file, "D:\\BTDownload\\main3.dic");
+//		 toWrite(file, "D:\\BTDownload\\main2.dic");
+		 toWrite2(file, "D:\\BTDownload\\main2.dic");
+//		 toWrite2(file, "D:\\BTDownload\\main3.dic");
 
 		// String s = "觀賞";
 		// String v = "觀賞魚";
@@ -158,14 +159,22 @@ public class Test3 {
 			try (Scanner scanner = new Scanner(file)) {
 				while (scanner.hasNextLine()) {
 					String line = processSpecial(StringUtil.trim(scanner.nextLine()));
-					int len = line.length();
-					if (len > 1) {
+					String[] lines = line.split("");
+					
+					Set<String> temp = new HashSet<String>();
+					for (String s : lines){
+						temp.add(s);
+					}
+					temp.add(line);
+					
+					for (String s : temp){
+						int len = s.length();
 						TreeSet<String> set = map.get(len);
 						if (set == null) {
 							set = new TreeSet<String>();
 							map.put(len, set);
 						}
-						set.add(line);
+						set.add(s);
 					}
 				}
 				scanner.close();

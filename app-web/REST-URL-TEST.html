@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<title>REST URL TEST</title>
+<style>
+body {
+	position: absolute;
+	left: 10%;
+	right: 10%;
+	font-family: "微軟正黑體", Lucida Sans Unicode, Verdana, Geneva,
+		sans-serif !important;
+}
+</style>
+</head>
+<script>
+	$(function() {
+		$('#testButton').click(function() {
+			$.ajax({
+				type : "POST",
+				contentType : "application/json",
+				url : "http://localhost:50080/rest/run/Training/returnValue.robot",
+// 				timeout : 3000,
+				cache : false,
+				dataType : "json",
+				data : '{"parameters":[{"variableName":"TestInput","attribute":[{"type":"text","name":"url","value":"input text"},{"type":"text","name":"tilte","value":"input text"},{"type":"text","name":"content","value":"input text"}]}]}',
+				error : function(XMLHttpRequest, textStatus, errorThrown) {
+					alert(textStatus);
+					console.log('XMLHttpRequest:', XMLHttpRequest);
+					console.log(XMLHttpRequest.responseText)
+				},
+				success : function(data) {
+					alert('success');
+					console.log(data);
+					$('#outputArea').val(JSON.stringify(data));
+				}
+			});
+		});
+	});
+</script>
+<body>
+	<h2>REST URL TEST</h2>
+	<hr/>
+	<button id="testButton">測試REST</button>
+	<br/>
+	<textarea id="outputArea" rows="30" cols="100"></textarea>
+</body>
+</html>
