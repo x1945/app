@@ -35,7 +35,7 @@
 		<!-- <elasticsearch.version>6.2.4</elasticsearch.version> -->
 		<!-- <elasticsearch.version>6.3.2</elasticsearch.version> -->
 <!-- 		<elasticsearch.version>6.4.1</elasticsearch.version> -->
-		<elasticsearch.version>6.5.2</elasticsearch.version>
+		<elasticsearch.version>6.8.17</elasticsearch.version>
 	</properties>
 
 	<dependencies>
