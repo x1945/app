@@ -17,7 +17,7 @@
 		<commons.lang3.version>3.9</commons.lang3.version>
 		<commons.dbcp.version>1.4</commons.dbcp.version>
 		<commons.beanutils.version>1.9.4</commons.beanutils.version>
-		<h2.version>1.4.195</h2.version>
+		<h2.version>2.1.210</h2.version>
 		<jackson.version>2.10.1</jackson.version>
 		<ehcache.version>2.10.6</ehcache.version>
 		<javax.servlet.api.version>3.1.0</javax.servlet.api.version>
